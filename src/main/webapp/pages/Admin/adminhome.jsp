@@ -153,12 +153,12 @@
         <section class="content">
         	
         
-        	 <div ng-if="user.userid == 124" class="row"> 
+        	 <div  class="row"> 
         	 
 					
         		<input class="form-control" type="text" ng-model="busnumber1" placeholder = "Bus Number" style="width: 20%; margin:2%;"/>
         		
-        		<a class="btn  btn-primary" ng-click="SendSMS()" style="margin-top:1%;">SEND SMS</a>
+        		<a ng-if="user.userid == 124" class="btn  btn-primary" ng-click="SendSMS()" style="margin-top:1%;">SEND SMS</a>
         		
         	</div> 
         	
@@ -215,8 +215,8 @@
                       </tr>
                     </thead>
                     	
-                    	<tr ng-repeat="n in passengerList">
-                    		<td>{{n.seatNumber}}</td>
+                    	<tr ng-if="passengerList.length != 351" ng-repeat="n in passengerList">
+                    		<td><font ng-if="n.seatNumber > 40">S{{n.seatNumber -40}}</font><font ng-if="n.seatNumber <= 40">{{n.seatNumber}}</font></td>
                     		<td>{{n.passengerName}}</td>
                     		<td>{{n.boardingPoint}}</td>
                     		<td ng-if="n.mobile !=0">{{n.mobile}}</td>
@@ -224,6 +224,16 @@
                     		<td>{{n.destination}}</td>
                     		<td>{{n.agentBook}}</td>
                     	</tr>
+                    
+                    	<tr ng-if="passengerList.length === 351" ng-repeat="n in passengerList">
+                    		<td ng-if="n.seatNumber < 36" ><font ng-if="n.seatNumber > 40">S{{n.seatNumber -40}}</font><font ng-if="n.seatNumber <= 40">{{n.seatNumber}}</font></td>
+                    		<td ng-if="n.seatNumber < 36">{{n.passengerName}}</td>
+                    		<td ng-if="n.seatNumber < 36">{{n.boardingPoint}}</td>
+                    		<td ng-if="n.mobile !=0">{{n.mobile}}</td>
+                    		<td ng-if="n.seatNumber < 36">{{n.pnrNumber}}</td>
+                    		<td ng-if="n.seatNumber < 36">{{n.destination}}</td>
+                    		<td ng-if="n.seatNumber < 36">{{n.agentBook}}</td>
+                    	</tr>	
                     	
                     <tbody>
                     
@@ -241,6 +251,34 @@
         
         
         
+        <div ng-if="user.userid == 124">
+			        <a  class="btn  btn-primary" ng-click="lottery()" style="margin-top:10%;margin-left:-25%;">LOTTERY</a>
+        	
+        			 <div ng-if="winnerView" class="box-body" style="padding-top: 1px !important;">
+                  <table id="example10" class="table table-bordered table-hover" >
+                  	<thead>
+                      <tr>
+                      	<th>PNR</th>
+                        <th>Email</th>
+                        <th>Mobile Number</th>
+                     	<th>JourneyDate</th>
+                      </tr>
+                    </thead>
+                    	
+                    	<tr>
+                    		
+                    		<td>{{winner.PNR}}</td>
+                    		<td>{{winner.email}}</td>
+                    		<td>{{winner.mobile}}</td>
+                    		<td>{{winner.Journeydate}}</td>
+                    
+                    	
+                    	</tr>
+                  </table>  
+        
+        </div>
+       </div> 
+        
         
         </section>
         
@@ -249,12 +287,7 @@
         
         
       </div><!-- /.content-wrapper -->
-      <footer class="main-footer">
-        <div class="pull-right hidden-xs">
-          <b>Version</b> 2.3.0
-        </div>
-        <strong>Makers &copy; 2016-2017 <a href="http://techvariabe.com">TechVariable</a>.</strong> 
-      </footer>
+   
 
    
       <!-- Add the sidebar's background. This div must be placed

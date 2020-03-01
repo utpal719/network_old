@@ -12,6 +12,7 @@ import com.network.model.Booking;
 import com.network.model.BusDetails;
 import com.network.model.User;
 import com.network.util.AdminUtil;
+import com.network.util.MessageDigestUtil;
 import com.network.util.SMSUtil;
 import com.network.util.SendMail;
 import com.network.util.UserUtil;
@@ -24,9 +25,9 @@ public class BusController {
 	
 	
 	@RequestMapping(value="/getBuses", method = RequestMethod.POST )
-	public ArrayList searchBuses(String fromCity,String toCity,String startdate){
+	public ArrayList searchBuses(String fromCity,String toCity,String journeyDate){
 
-		ArrayList al =  userUtil.searchBusesForParameter(fromCity, toCity,startdate);
+		ArrayList al =  userUtil.searchBusesForParameter(fromCity, toCity,journeyDate);
 		DBUtil.closeConnection();
 		return al;
 	}
@@ -35,8 +36,7 @@ public class BusController {
 	@RequestMapping(value = "/getBusDetailsById",method = RequestMethod.POST)
 	public BusDetails getBusDetailsById(String journeyDate,int busId,int isMid) throws Exception{
 
-		System.out.println("Journey Date : "+journeyDate+" busId : "+busId);
-
+	
 		if(isMid == 0){
 			BusDetails b =  userUtil.getBusDetailsById(journeyDate, busId);
 			DBUtil.closeConnection();
@@ -53,7 +53,7 @@ public class BusController {
 	@RequestMapping(value = "/validateEmail",method = RequestMethod.POST)
 	public boolean validateEmail(String email){
 
-		System.out.println("Email "+email);
+		
 
 		return userUtil.validateEmail(email);
 	}
@@ -61,13 +61,13 @@ public class BusController {
 	@RequestMapping(value = "/bookTicket" , method = RequestMethod.POST)
 	public Booking bookTickets(Integer busDetail, Integer noOfSeat, Double totalFare,String selectedSeats,String passengerName,String passengerGenders,String passengerAge,String email,String mobile,String journeyDate,String fromCity,String toCity,Integer midId,String agentFare,Integer userid,String boardingPoint){
 		
-		System.out.println("Book Ticket "+boardingPoint);
+		
 	/*	SendMail sm = new SendMail();
 		sm.sendEmail("utpal719@gmail.com", "booking", "no Of seat : "+busDetail+" totalFare "+passengerAge+" selectedSeats "+selectedSeats+" email : "+email+"fromcity : "+fromCity+" toCity : "+toCity+" user id "+userid);
 	*/	User user = new User();
 		try{
 			
-			if(userid == 114 || userid == 49 || userid == 218){
+			if(userid == 114 || userid == 49 || userid == 218 || userid == 47 || userid == 131 || userid == 80 || userid == 187 || userid == 17 || userid == 43 || userid == 1968 || userid == 8 || userid  == 12 || userid == 13 || userid == 15 || userid == 67 || userid == 104 || userid == 144 || userid == 156 || userid == 185 || userid == 190 || userid == 230 || userid == 40){
 				return null;
 			
 			}else{
@@ -85,9 +85,6 @@ public class BusController {
 			return null;
 		}
 		
-		System.out.println("UserId "+user.getUserid());
-		
-		System.out.println("no Of seat : "+busDetail+" totalFare "+passengerAge+" selectedSeats "+selectedSeats+" email : "+email+"fromcity : "+fromCity+" toCity : "+toCity);
 		
 		Booking b =  userUtil.bookTicket(busDetail, noOfSeat, totalFare, selectedSeats, passengerName, passengerGenders, passengerAge, email, mobile, journeyDate, fromCity, toCity,midId,0,user,boardingPoint);
 		DBUtil.closeConnection();
@@ -98,11 +95,10 @@ public class BusController {
 	@RequestMapping(value = "/bookTicketNew" , method = RequestMethod.POST)
 	public Booking bookTicketNew(Integer busDetail, Integer noOfSeat, Double totalFare,String selectedSeats,String passengerName,String passengerGenders,String passengerAge,String email,String mobile,String journeyDate,String fromCity,String toCity,Integer midId,double agentFare,String boardingPoint){
 		
-		System.out.println("Book Ticket New "+boardingPoint);
+	
 		User user = new User();
 		user.setRoleid(0);
 		//String strAgentFare = agentFare+"";
-		System.out.println("no Of seat : "+busDetail+" totalFare "+passengerAge+" selectedSeats "+selectedSeats+" email : "+email+"fromcity : "+fromCity+" toCity : "+toCity);
 		
 		Booking b =  userUtil.bookTicket(busDetail, noOfSeat, totalFare, selectedSeats, passengerName, passengerGenders, passengerAge, email, mobile, journeyDate, fromCity, toCity,midId,agentFare,user,boardingPoint);
 		DBUtil.closeConnection();
@@ -114,10 +110,10 @@ public class BusController {
 	@RequestMapping(value="bookTicketCash" , method=RequestMethod.POST)
 	public Booking bookTicketCash(Integer busDetail, Integer noOfSeat, Double totalFare,String selectedSeats,String passengerName,String passengerGenders,String passengerAge,String email,String mobile,String journeyDate,String fromCity,String toCity,Integer midId,String agentFare,String boardingPoint, int userid){
 		
-		System.out.println("Book Ticket New "+boardingPoint+" userid : "+userid);
+	
 		User user = new User();
 		
-			if(userid == 114 || userid == 49 || userid == 218){
+			if(userid == 114 || userid == 49 || userid == 218 || userid == 47 || userid == 131 || userid == 80 || userid == 187 || userid == 17 || userid == 43 || userid == 1968 || userid == 8 || userid  == 12 || userid == 13 || userid == 15 || userid == 67 || userid == 104 || userid == 144 || userid == 156 || userid == 185 || userid == 190 || userid == 230 || userid == 40){
 				return null;	
 			}else{
 				 user = userUtil.getUserById(userid);
@@ -125,18 +121,18 @@ public class BusController {
 
 	
 			if(user.getRoleid() == 0){
-				return null;
+				Booking berr = new Booking();
+				berr.setErrorMsg("Your account is inactive.");
+				return berr;
+			}else{
+				
+				Booking b =  userUtil.bookTicketCash(busDetail, noOfSeat, totalFare, selectedSeats, passengerName, passengerGenders, passengerAge, email, mobile, journeyDate, fromCity, toCity,midId,agentFare,user,boardingPoint);
+				
+				DBUtil.closeConnection();
+				return b;
 			}
 			
-			if(journeyDate.equalsIgnoreCase("Sep 28, 2017") || journeyDate.equalsIgnoreCase("Sep 29, 2017") || journeyDate.equalsIgnoreCase("Sep 30, 2017")){
-				return null;
-			}
-
-			System.out.println("no Of seat : "+busDetail+" totalFare "+passengerAge+" selectedSeats "+selectedSeats+" email : "+email+"fromcity : "+fromCity+" toCity : "+toCity);
 			
-			Booking b =  userUtil.bookTicketCash(busDetail, noOfSeat, totalFare, selectedSeats, passengerName, passengerGenders, passengerAge, email, mobile, journeyDate, fromCity, toCity,midId,agentFare,user,boardingPoint);
-			DBUtil.closeConnection();
-			return b;
 			
 	}
 	
@@ -168,6 +164,31 @@ public class BusController {
 		return b;
 	}
 	
+	@RequestMapping(value = "/updatePaymentFromPayu" ,method=RequestMethod.POST)
+	public Booking updatePaymentFromPayu(String txnId,String hashCode,String transStatus, String payuId){
+
+		Booking b =  userUtil.makePaymentBookingPayu(txnId, hashCode, transStatus);
+		DBUtil.closeConnection();
+		return b;
+	}
+	
+	
+	@RequestMapping(value = "/updatePaymentFromJuspaySafe" ,method=RequestMethod.POST)
+	public Booking updatePaymentFromPayu(String txnId){
+
+		Booking b =  userUtil.makePaymentBookingJuspaySafe(txnId);
+		DBUtil.closeConnection();
+		return b;
+	}
+	
+	@RequestMapping(value = "/updatePaymentFromJuspaySafe1" ,method=RequestMethod.GET)
+	public Booking updatePaymentFromPayu(){
+
+		Booking b =  userUtil.makePaymentBookingJuspaySafe("PNR-246770");
+		DBUtil.closeConnection();
+		return b;
+	}
+	
 	@RequestMapping(value="/verifyPNR" , method= RequestMethod.POST)
 	public boolean verifyPNR(String pnr){
 		  
@@ -184,6 +205,17 @@ public class BusController {
 		return b;
 		
 	}
+	
+	@RequestMapping(value="/getBookingByPNRAndroid" , method=RequestMethod.POST)
+	public Booking getBookingByPNRAndroid(String pnr , int userid , String mobile){
+		
+		Booking b =  userUtil.getBookingByPNRAndroid(pnr , userid , mobile);
+		DBUtil.closeConnection();
+		return b;
+		
+	}
+	
+	
 	@RequestMapping(value="/getBookingByPNRSMS" , method=RequestMethod.POST)
 	public Booking getBookingByPNRSMS(String pnr){
 		
@@ -226,7 +258,7 @@ public class BusController {
 	@RequestMapping(value="/cancelBooking" , method = RequestMethod.POST)
 	public int cancelBooking(String pnrNumber ,String passengers) throws Exception{
 		
-		System.out.println("pnr "+pnrNumber+" passen "+passengers);
+		
 
 		int x =  userUtil.cancelBookingMobile(pnrNumber,passengers);
 		DBUtil.closeConnection();
@@ -235,6 +267,37 @@ public class BusController {
 		}
 		return x;
 	}
+	
+	
+	@RequestMapping(value="/cancelBookingAndroid" , method = RequestMethod.POST)
+	public int cancelBookingAndroid(String pnrNumber ,String passengers , int userid , String mobile) throws Exception{
+		
+	
+
+		int x =  userUtil.cancelBookingAndroid(pnrNumber,passengers , userid , mobile);
+		DBUtil.closeConnection();
+		if(x == 0){
+			throw new Exception();
+		}
+		return x;
+	}
+	
+	
+	@RequestMapping(value="/cancelBookingAgent" , method = RequestMethod.POST)
+	public int cancelBookingAgent(String pnrNumber ,String passengers , int userid) throws Exception{
+		
+	
+		int x =  userUtil.cancelBookingAgent(pnrNumber,passengers , userid);
+		DBUtil.closeConnection();
+		
+		if(x == 0){
+			throw new Exception();
+		}
+		return x;
+		
+	}
+	
+	
 	
 	@RequestMapping(value="/getAgentPercentage" ,method =RequestMethod.POST)
 	public double getAgentPercentage(int agentid){
@@ -254,11 +317,11 @@ public class BusController {
 	
 	@RequestMapping(value="/getSecuritySignature" , method=RequestMethod.POST)
 	public String getSecuritySignature(String collection,String marchantId){
-	System.out.println("here ");
+
 		
 		String securitySignature = "";
 		try{
-		System.out.println("collection : collection "+collection+"  id : "+marchantId );
+	
 		 //Need to replace the last part of URL("your-vanityUrlPart") with your Testing/Live URL
 	    String formPostUrl = "https://checkout.citruspay.com/ssl/checkout/n3wuuih2ub";
 	    //Need to change with your Secret Key
@@ -273,14 +336,14 @@ public class BusController {
 	   String currency = "INR";
 	   String data=vanityUrl+orderAmount+merchantTxnId+currency;
 	   
-	   System.out.println("merchantTxnId : "+merchantTxnId);
+
 	   
 	    javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
 	    mac.init(new javax.crypto.spec.SecretKeySpec(secret_key.getBytes(), "HmacSHA1"));
 	    byte[] hexBytes = new org.apache.commons.codec.binary.Hex().encode(mac.doFinal(data.getBytes()));
 	    securitySignature = new String(hexBytes, "UTF-8");
 	    
-	    System.out.println("Signature is : "+securitySignature);
+	   
 	    
 		}catch(Exception ex){
 			System.out.println("ex : "+ex.toString());
@@ -321,5 +384,51 @@ public class BusController {
 		SendMail sm = new SendMail();
 		sm.sendEmail("utpal@techvariable.com", "Network Tourism Query", "name : "+name+"<br>"+"email : "+email+"<br>ph : "+ph+" <br>date "+date+"<br> :Message "+message );
 	}
+	
+	@RequestMapping(value = "/getUserById" , method = RequestMethod.POST)
+	public User bookTicketNew(Integer id){
+		
+		User user = userUtil.getUserById(id);
+		DBUtil.closeConnection();
+		return user;
+		
+	}
+	
+	@RequestMapping(value = "/sendUserEmail" , method = RequestMethod.POST)
+	public boolean sendUserEmail(String fromAddress, String toAddress, String content){
+		
+		SendMail sendMail = new SendMail();
+		String subject = "FeedBack From : "+fromAddress;
+		sendMail.sendEmail(toAddress, subject, content);
+		return true;
+	}
+	
+	
+	@RequestMapping(value = "/generateHashCode" , method = RequestMethod.POST)
+	public String generateHashCode(){
+		
+		String hash = "";
+		
+		try{
+			String random = MessageDigestUtil.randomGenerator();
+			hash = MessageDigestUtil.hashCal("SHA-512", random);
+			
+		}catch(Exception e){
+			
+		}
+		
+		return hash;
+		
+	}
+	
+	
+	@RequestMapping(value = "/getAppVersion" , method = RequestMethod.GET)
+	public double getAppVersion(){
+		
+		double appVersion = 5.27;
+		return appVersion;
+		
+	}
+	
 	
 }

@@ -11,49 +11,41 @@ public class DBUtil {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	
 	//static final String DB_URL = "jdbc:mysql://localhost:3306/network";
-	static final String DB_URL = "jdbc:mysql://127.7.153.2:3306/nwt?autoReconnect=true";
+	static final String DB_URL = "jdbc:mysql://172.30.4.109:3306/nwt?autoReconnect=true";
+	//static final String DB_URL = "jdbc:mysql://localhost:3306/nwt?autoReconnect=true";
+	//Use this in future .. from f:://DB_NWT
 	//static final String DB_URL = "jdbc:mysql://localhost:3306/network?autoReconnect=true";
 	
 	   //  Database credentials
-	static final String USER ="adminH4hSQks";
-	static final String PASS ="AMMTvSFudLzx";
+	static final String USER ="userL8L";
+	static final String PASS ="Ntwa0dFM4orFYsId";
+
 	
+	//static final String USER ="root";
+    //static final String PASS ="";
 	public static Connection getConnection() {
-	/*	
-		
-		if (connection != null){
+
 			try{
-				if(!connection.isClosed()){
-					connection.close();
-				}
-		
-			}catch(Exception e){
-				System.out.println("not null "+connection.toString());
-				//return connection;
-			}
-		
-		}*/
-			
-	//	else {
-			try{
-				   System.out.println("before conncting");
+				  
 			      //STEP 2: Register JDBC driver
 			      Class.forName("com.mysql.jdbc.Driver");
 
 			      //STEP 3: Open a connection
-			      System.out.println("Connecting to database...");
+			    
 			      connection = DriverManager.getConnection(DB_URL,USER,PASS);
+			    
 			      
 			   }catch(SQLException se){
 				   
 				      se.printStackTrace();
 				   }catch(Exception e){
+					  e.printStackTrace();
 				      //Handle errors for Class.forName
 				   } 
+		
 			return connection;
 		}
-	//}
-	
+
 	public static Connection getOPenConnection(){
 		
 		try{

@@ -108,10 +108,10 @@ public class AdminController {
 	@RequestMapping(value = "/sendSMStoPassengers" , method =RequestMethod.POST )
 	public void sendSMStoPassengers(int busId, String journeyDate , String busNumber){
 		
-		SendMail sm = new SendMail();
-		sm.sendEmail("utpal@techvariable.com", "BuSnumber Test", busId+" "+journeyDate+" "+busNumber);
-	/*	admUtil.sendSMStoPassengers(busId, journeyDate , busNumber);
-		DBUtil.closeConnection();*/
+		/*SendMail sm = new SendMail();
+		sm.sendEmail("utpal@techvariable.com", "BuSnumber Test", busId+" "+journeyDate+" "+busNumber);*/
+		admUtil.sendSMStoPassengers(busId, journeyDate , busNumber);
+		DBUtil.closeConnection();
 		
 	}
 	

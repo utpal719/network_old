@@ -112,12 +112,12 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
                         </div>
                 <div class="nav">
                     <ul class="slimmenu" id="slimmenu">
-                        <li><a href="../index.jsp">Home</a>
+                        <li class="active"><a href="../index.jsp">Home</a>
 
                         </li>
                         <li><a href="aboutus.jsp">About Us</a>  </li>
 
-                        <li class="active"><a href="#">Cancellation</a>  </li>
+                        <li><a href="#">Cancellation</a>  </li>
                         <li><a href="printsms.jsp">Print / SMS Ticket</a></li>
                           <li><a href="contactus.jsp">Contact Us</a></li>
                           <li ng-if="!auth"><a href="pages/login.jsp">Login{{auth}}</a></li>

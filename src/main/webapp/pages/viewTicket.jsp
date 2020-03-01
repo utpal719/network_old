@@ -164,12 +164,12 @@
 						</tr>
 					  
 					  	<tr style="margin: 0; padding: 0;">
-						<td style="width:25%; font-size: 14px; margin: 0; padding: 0px; border-bottom:1px solid #e0e0e0; vertical-align: middle;">
+						<td style="width:35%; font-size: 14px; margin: 0; padding: 0px; border-bottom:1px solid #e0e0e0; vertical-align: middle;">
 						  <p style="font-weight: bold; margin: 0 0 5px; padding: 0;text-transform:capitalize;"><span id="#">{{bookinginfo.journeyDate}}
-				  					 <span id="#">{{bookinginfo.pnrNumber}}</span></p> 
+				  					 <span id="#" style="margin-left : 15px;">{{bookinginfo.pnrNumber}}</span></p> 
 					
 						</td>
-						<td style="width:25%; font-size: 14px; margin: 0; padding: 0px; border-bottom:1px solid #e0e0e0; vertical-align: middle;">
+						<td style="width:20%; font-size: 14px; margin: 0; padding: 0px; border-bottom:1px solid #e0e0e0; vertical-align: middle;">
 							<p style="font-weight: 700; margin: 0 0 5px; padding: 0;"> <span id="#">{{bookinginfo.reportingTime}}</span></p>
 							<span style="font-size: 12px; color: #999; margin: 0; padding: 0;">Reporting time</span>  
 						</td>
@@ -246,7 +246,7 @@
 				
 						<td style="font-size: 14px; margin: 0; border-bottom:1px solid #e0e0e0; vertical-align: middle;">
 							<p style="font-weight: 700; margin: 0 0 5px; padding: 0;">
-							<span id="#" ng-repeat="i in bookinginfo.passengerList">{{i.seatNumber}} , </span></p>
+							<span id="#" ng-repeat="i in bookinginfo.passengerList"><font ng-if="i.seatNumber > 40">S{{i.seatNumber -40 }}</font>  <font ng-if="i.seatNumber <= 40">{{i.seatNumber}}</font>, </span></p>
 							<span style="font-size: 12px; color: #999; margin: 0; padding: 0;">Seat Number</span>  
 						</td>
 						
@@ -266,7 +266,9 @@
                                   </p>
 								</td>
 								<td>
-									 <p style="font-size: 12px; font-weight: 700; margin: 0; padding: 0;"><span style="font-size: 12px; margin: 0 10px 0 0; padding: 0;">PH : </span><span id="#">8811079999, 7086093241, 7086018977 (ISBT)</span></p>
+									 <p style="font-size: 12px; font-weight: 700; margin: 0; padding: 0;"><span style="font-size: 12px; margin: 0 10px 0 0; padding: 0;">PH : </span><span id="#"> 8811079999, 7086093241 <br>
+									 	ISBT Guwahati : 7086018977  <br>
+									 	Barak Valley : 9854037111,7086054040 </span></p>
 								
 								  
                                    
@@ -363,6 +365,11 @@
        	<span style="color:#a45151;margin: 10%;">Your account balance is too low to book the tickets! Please recharge.</span>
        
        </div>
+        <div ng-show="inactiveaccount">
+       	
+       	<span style="color:#a45151;margin: 10%;">Your account is inactive. Please contact admin!</span>
+       
+       </div>
         
             <div class="gap"></div>
         </div>
@@ -414,9 +421,9 @@
                     </div>
                     <div class="col-md-4">
                         <h4>Have Questions?</h4>
-                        <h4 class="text-color">+1-000-000-0000</h4>
+                        <h4 class="text-color">8403077666</h4>
                         
-                        <p><h5>support@network.com</h5></p>
+                        <p><h5>support@networktravels.com</h5></p>
                     </div>
 
                 </div>

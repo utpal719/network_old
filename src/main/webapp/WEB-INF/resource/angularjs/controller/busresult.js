@@ -1,5 +1,6 @@
 var app=angular.module('network',['LocalStorageModule']);
 
+
 app.controller('buscontroller', function($scope,$rootScope,localStorageService ,$http,BusService,$window) {
 
 	
@@ -46,7 +47,7 @@ app.controller('buscontroller', function($scope,$rootScope,localStorageService ,
 	$scope.viewDetails = function(busId,midId){
 		
 		
-		console.log(midId);
+	
 		
 		localStorageService.set("selectedBusId",busId);
 		localStorageService.set("startDate",$scope.startDate);
@@ -55,7 +56,7 @@ app.controller('buscontroller', function($scope,$rootScope,localStorageService ,
 	
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	
 });
@@ -68,19 +69,14 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 	$scope.seat40 = false;
 	$scope.seat32 = false;
 	$scope.seat39 = false;
+	$scope.seat45 = false;
+	$scope.seat28 = false;
+	$scope.seats60 = false;
+	$scope.seat351 = false;
 	$scope.boardingPoint="";
 	$scope.noSeatSelected=false;
 	$scope.noBoardingPoint=false;
 	
-	/*var testSeat=localStorageService.get("selectedSeats");
-	$scope.seatsDisplay = "";
-	for(var k=0;k<testSeat.length;k++){
-		if($scope.seatsDisplay == ""){
-			$scope.seatsDisplay = testSeat[k];
-		}else{
-			$scope.seatsDisplay = 	$scope.seatsDisplay +","+testSeat;
-		}
-	}*/
 
 	
 	$scope.nonavailable = {};
@@ -148,7 +144,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 	$scope.from = searchObject.from;
 	$scope.to = searchObject.to;
 	
-	console.log("start Date : "+$scope.startDate);
+	
 	
 	
 	var journeyDate = $scope.startDate ;//"18/08/2016";
@@ -159,6 +155,9 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 	BusService.getBusDetailsByBusId(journeyDate,selectedBusId,mid).then(function(promise){
 		
 		 $scope.busDetail = promise.data;
+		 
+		 
+		 
 		 
 		 if($scope.busDetail.bus.seatCapacity == 31){
 			 $scope.seat31 = true;
@@ -176,6 +175,16 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 		 }else if($scope.busDetail.bus.seatCapacity == 32){
 			 $scope.seat32 = true;
 					 
+		 }else if($scope.busDetail.bus.seatCapacity == 45){
+			 $scope.seat45 = true;
+		 }else if($scope.busDetail.bus.seatCapacity == 28){
+			 $scope.seat28 = true;
+			 
+		 }else if($scope.busDetail.bus.seatCapacity == 351){
+			 $scope.seat351 = true
+		 }else if($scope.busDetail.bus.seatCapacity == 60){
+			 
+			 $scope.seats60 = true;
 		 }
 
 		 
@@ -187,17 +196,14 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 		 
 		 $scope.isAvailableView = function(index){
 			 
-			 console.log(index);
-			 
+
 			 var isGrey = false;
 			 var isSelected = false;
 			 
 			 var selectedSeats = localStorageService.get("selectedSeats");
 			 
 			 for(var i=0;i<$scope.busDetail.occupiedSeat.length;i++){
-				 
-				 console.log($scope.busDetail.occupiedSeat[i]);
-				
+
 				 if(index == $scope.busDetail.occupiedSeat[i] ){
 					
 					 isGrey = true;
@@ -212,21 +218,55 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 					 
 					 isSelected=true;
 				 }
+				 
+				 
+				 let sittingSeat = 0 ;
+				 let sleeperseat = 0 ;
+				 
+				 selectedSeats.forEach((eachId) => {
+					 
+					 if(eachId > 40){
+						 sleeperseat++;
+					 }else{
+						 sittingSeat++;
+					 }
+				 });
+				 
+				
+				 
 				 $scope.noOfSeat = selectedSeats.length;
-				 $scope.totalFare = $scope.noOfSeat* ($scope.busDetail.bus.fare);
+				 $scope.totalFare = (sittingSeat * ($scope.busDetail.bus.fare)) + (sleeperseat * ($scope.busDetail.bus.sleeperFare));
+				
 			 }else{
 				 
 				 $scope.totalFare = 0;
 			 }
-
-			 if(isGrey){
-				 return '0px -40px';
-			 }else if(isSelected){
+			 
+			 
+			 if(index > 40 && $scope.seats60 == true){
 				 
-				 return '0px -60px';
+				 if(isGrey){
+					
+					 return '-40px -40px'; 
+				 }else if(isSelected){
+					 
+					 return '-40px -60px';
+				 }else{
+						 return '-40px 0px';
+				 }
 			 }else{
-					 return '-0px 0px';
+				 
+				 if(isGrey){
+					 return '0px -40px';
+				 }else if(isSelected){
+					 
+					 return '0px -60px';
+				 }else{
+						 return '-0px 0px';
+				 }
 			 }
+
+			
 		
 	};
 	
@@ -243,7 +283,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 		
 			var seats = localStorageService.get("selectedSeats");
 			
-			console.log(seats);
+			
 			
 			if(seats == null || seats.length == 0){
 
@@ -321,12 +361,28 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 	
 	$scope.noOfSelectedSeat = localStorageService.get("selectedSeats");
 
+
 	if($scope.noOfSelectedSeat != null){
 		$scope.numberOfSeat = $scope.noOfSelectedSeat.length;
 		
 	}
+	
+	 let sittingSeatx = 0 ;
+	 let sleeperseatx = 0 ;
+	 
+	 $scope.noOfSelectedSeat.forEach((eachId) => {
+		 
+		 if(eachId > 40){
+			 sleeperseatx++;
+		 }else{
+			 sittingSeatx++;
+		 }
+	 });
 
-	$scope.totalFare = $scope.numberOfSeat * $scope.busDetail.bus.fare;
+	 $scope.totalFare = (sittingSeatx * ($scope.busDetail.bus.fare)) + (sleeperseatx * ($scope.busDetail.bus.sleeperFare));
+
+
+	//$scope.totalFare = $scope.numberOfSeat * $scope.busDetail.bus.fare;
 	
 	
 	
@@ -459,7 +515,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 				
 				if(promise.data === "false"){
 					
-					console.log("display");
+				
 					
 					isValid = false;
 					$scope.noEmail = true;
@@ -506,7 +562,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 			
 			var passengerNames = "";
 			
-			console.log($scope.pNames);
+		
 			
 			for(var xy =0;xy<arrSelectedSeats.length;xy++){
 				
@@ -561,12 +617,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 				
 				$scope.bookinginfo = promise.data;
 				
-				console.log("booking donme");
 				
-					//e.preventDefault();
-				
-				
-					console.log($scope.bookinginfo.pnrNumber);
 					$scope.bookinginfo.email = $scope.email;
 					$scope.bookinginfo.mobile = $scope.mobile;
 					
@@ -575,7 +626,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 					$scope.bookinginfo = localStorageService.get("booking");
 					//angular.element('#amtform').submit();
 					
-					$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket1.jsp';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket1.jsp';
 				
 			});
 			
@@ -600,7 +651,7 @@ app.controller('selectSeatController', function($scope,$rootScope,$location,loca
 					$scope.bookinginfo = localStorageService.get("booking");
 					console.log($scope.bookinginfo);
 					localStorageService.set("BookingInfo",$scope.bookinginfo);
-					$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
 				
 			});	
 			*/
@@ -785,11 +836,12 @@ $scope.collectCash = function(e){
 					localStorageService.set("booking",$scope.bookinginfo);
 
 					$scope.bookinginfo = localStorageService.get("booking");
-					console.log(JSON.stringify($scope.bookinginfo));
+					
 					localStorageService.set("BookingInfo",$scope.bookinginfo);
 					
 					
-					$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
+					//$window.location.href = 'http://localhost:8080/nwt/pages/viewTicket.jsp';
 				
 			});
 			
@@ -801,7 +853,7 @@ $scope.collectCash = function(e){
 	
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
     
 });	
@@ -860,7 +912,7 @@ app.controller('bookingController', function($scope,$rootScope,$location,localSt
 	
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	
 });
@@ -890,7 +942,7 @@ app.controller('bookingController1', function($scope,$rootScope,$location,localS
 	
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	
 });
@@ -912,7 +964,7 @@ app.controller('bookingControllerprocess', function($scope,$rootScope,$location,
  			
  			localStorageService.set("BookingInfo" ,promise.data );
  			   
- 			$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+ 			$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
  		});	 
 
  	});
@@ -938,7 +990,7 @@ app.controller('bookingControllerprocess', function($scope,$rootScope,$location,
 	
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	
 	    
@@ -965,6 +1017,8 @@ app.controller('bookingFinal', function($scope,$rootScope,$location,localStorage
 			
 			$scope.noCash = true;
 			
+		}else if($scope.bookinginfo.errorMsg == "Your account is inactive."){
+			$scope.inactiveaccount = true;
 		}else{
 			
 			$scope.disMsg = true;
@@ -994,7 +1048,7 @@ app.controller('bookingFinal', function($scope,$rootScope,$location,localStorage
 
 	  $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	
 });
@@ -1006,15 +1060,15 @@ app.controller('cancelcontroller', function($scope,$rootScope,$location,localSto
 		
 		$scope.booking = {};
 		
-		console.log($scope.booking);
+	
 		
 		$scope.varifypnr = function(){
 			
-			console.log("changed "+$scope.pnrnumber);
+		
 			
 			BusService.verifyPNR($scope.pnrnumber).then(function(promise){
 					
-				console.log(promise.data);
+			
 				
 				if(promise.data === "false"){
 					$scope.pnrnotavailable = true;
@@ -1061,7 +1115,7 @@ app.controller('cancelcontroller', function($scope,$rootScope,$location,localSto
 				console.log("here : "+$scope.booking);
 				
 				localStorageService.set("cancelBooking" , $scope.booking );
-				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewPassengersCancel.jsp';
+				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewPassengersCancel.jsp';
 			});
 			
 		};
@@ -1090,7 +1144,7 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 	
 	
 	$scope.booking = 	localStorageService.get("cancelBooking");
-	console.log(JSON.stringify($scope.booking));
+  //console.log(JSON.stringify($scope.booking));
 	
 	$scope.verifyShowOTP = false;
 	$scope.pList = true;
@@ -1143,11 +1197,11 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 			 if($scope.user != null){
 				 
 				 if($scope.user.roleid === 1 || $scope.user.roleid === 2){
-					 BusService.cancelBooking($scope.booking.pnrNumber,$scope.passengers).then(function(promise){
+					 BusService.cancelBookingAgent($scope.booking.pnrNumber,$scope.passengers , $scope.user.userid).then(function(promise){
 
 							//if(promise.data != 0){
 								
-								//$window.location.href = 'https://nwt-techv.rhcloud.com/pages/cancelledsuccess1.jsp';
+								//$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/cancelledsuccess1.jsp';
 							
 								$scope.verifyShowOTP = false;						
 								$scope.passengerList = false;
@@ -1166,7 +1220,7 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 								}
 							//}
 							
-							//$window.location.href = 'https://nwt-techv.rhcloud.com/pages/cancelledsuccess.jsp';
+							//$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/cancelledsuccess.jsp';
 						});
 					 
 					 
@@ -1237,7 +1291,7 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 
 					if(promise.data != 0){
 						
-						//$window.location.href = 'https://nwt-techv.rhcloud.com/pages/cancelledsuccess1.jsp';
+						//$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/cancelledsuccess1.jsp';
 					
 						$scope.verifyShowOTP = false;						
 						$scope.passengerList = false;
@@ -1248,7 +1302,7 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 						$scope.id = promise.data;
 					}
 					
-					//$window.location.href = 'https://nwt-techv.rhcloud.com/pages/cancelledsuccess.jsp';
+					//$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/cancelledsuccess.jsp';
 				});
 				
 			}else{
@@ -1272,7 +1326,7 @@ app.controller('confirmCancel', function($scope,$rootScope,$location,localStorag
 				
 			if(promise.data === "true"){
 				console.log("Successfully updated ");
-				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/cancelledsuccess.jsp';
+				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/cancelledsuccess.jsp';
 			}
 		
 		});
@@ -1316,14 +1370,14 @@ app.controller('loginController', function($scope,$rootScope,$location,localStor
 				}else if($scope.user.roleid === 5){
 					
 					localStorageService.set("user" , $scope.user );
-					$window.location.href = 'https://nwt-techv.rhcloud.com/pages/Admin/admincancel.jsp';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/Admin/admincancel.jsp';
 					
 				}else{
 					
 					//redirect to homepage
 				
 					localStorageService.set("user" , $scope.user );
-					$window.location.href = 'https://nwt-techv.rhcloud.com';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 				}
 				
 			});
@@ -1450,7 +1504,7 @@ app.controller('loginController', function($scope,$rootScope,$location,localStor
 				LoginService.registerUser($scope.fullname,$scope.email,$scope.mobile,$scope.uname,$scope.password).then(function(promise){
 					
 					localStorageService.set("user" , promise.data );
-					$window.location.href = 'https://nwt-techv.rhcloud.com';
+					$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 				});
 				
 			}
@@ -1525,20 +1579,20 @@ app.controller('printcontroller', function($scope,$rootScope,$location,localStor
 			
 			BusService.getBookingsPNRNumber($scope.pnr).then(function(promise){
 				localStorageService.set("BookingInfo" , promise.data );
-				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
 				
 			});
 		}else if($scope.tick === "sms"){
 			BusService.getBookingsPNRNumberSMS($scope.pnr).then(function(promise){
 				localStorageService.set("BookingInfo" , promise.data );
-				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
 				
 			});
 			
 		}else if($scope.tick === "mail"){
 			BusService.getBookingsPNRNumberEmail($scope.pnr).then(function(promise){
 				localStorageService.set("BookingInfo" , promise.data );
-				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/viewTicket.jsp';
+				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/viewTicket.jsp';
 				
 			});
 			

@@ -564,7 +564,7 @@ import com.network.model.User;
 				booking.setPaymentStatus(rs.getString("paymentstatus"));
 				booking.setBoardingPoint(rs.getString("boardingpoint"));
 				booking.setToCity(rs.getString("tocity"));
-				booking.setUser(userUtil.getUserById(rs.getInt("userid")));
+				booking.setUser(userUtil.getAgentUserById(rs.getInt("userid")));
 				
 				if(booking.getPaymentStatus().equalsIgnoreCase("SUCCESS") || booking.getPaymentStatus().equalsIgnoreCase("In Cash")){
 			
@@ -582,7 +582,7 @@ import com.network.model.User;
 				//get Passengers
 				ArrayList alPassenger = userUtil.getPassengersByPNR(booking.getPnrNumber());
 				
-				System.out.println("AL P "+alPassenger.size());
+				
 
 			
 				booking.setPassengerList(alPassenger);
@@ -594,7 +594,7 @@ import com.network.model.User;
 						AdminViewPassenger adPassenger = new AdminViewPassenger();
 						Passenger p = (Passenger)alPassenger.get(i);
 						
-						System.out.println("Pass  ********  "+p.getSeatNumber());
+						
 						
 						adPassenger.setPassengerName(p.getPassengerName());
 						adPassenger.setPnrNumber(booking.getPnrNumber());
@@ -613,7 +613,7 @@ import com.network.model.User;
 						
 						User u = booking.getUser();
 						
-						if(u.getRoleid() == 1){
+						if(u.getRoleid() == 1 || u.getRoleid() == 2){
 							adPassenger.setAgentBook(booking.getUser().getUserName()+"("+booking.getUser().getMobile()+")");
 						}else{
 							adPassenger.setAgentBook("USER");
@@ -678,11 +678,15 @@ import com.network.model.User;
 			pstm.setString(2, journeyDate);
 			rs = pstm.executeQuery();
 			
-			String numbers = "";
+			
 		
+			
+			String jData = "";
 			
 			while(rs.next()){
 				
+				String numbers = "";
+				String pnrNo = "";
 				
 				Booking booking = new Booking();
 				booking.setBusId(rs.getInt("busid"));
@@ -705,58 +709,30 @@ import com.network.model.User;
 				booking.setTotdalFare(rs.getDouble("totalfare"));
 				booking.setPnrNumber("PNR-"+uuid);
 				
-				if(numbers.equalsIgnoreCase("")){
+				pnrNo = booking.getPnrNumber();
+				jData = booking.getJourneyDate();
+				
+				//if(numbers.equalsIgnoreCase("")){
 					numbers = booking.getMobile()+"";
-				}else{
-					numbers = numbers+","+booking.getMobile();
-				}	
+				//}
 				
-				
-				sms.sendSMS(numbers, "Dear Customer,\r\nYour bus number for PNR : "+booking.getPnrNumber() +" journeydate : "+booking.getJourneyDate()+" is : "+busNumber);
-				
-				/*	for(int i = 0; i<alPassenger.size() ; i++){
-						AdminViewPassenger adPassenger = new AdminViewPassenger();
-						Passenger p = (Passenger)alPassenger.get(i);
-						
-						System.out.println("Pass  ********  "+p.getSeatNumber());
-						
-						adPassenger.setPassengerName(p.getPassengerName());
-						adPassenger.setPnrNumber(booking.getPnrNumber());
-						adPassenger.setSeatNumber(p.getSeatNumber());
-						adPassenger.setBoardingPoint(booking.getBoardingPoint());
-						adPassenger.setPayment(booking.getPaymentStatus());
-						adPassenger.setFare(eachFare+"");
-						String dest = booking.getToCity();
-						
-						if(dest.equalsIgnoreCase("NORTH LAKHIMPUR")){
-							dest = "NLP";
-						}
-						
-						adPassenger.setDestination(dest);
-						adPassenger.setMobile(booking.getMobile());
-						
-						User u = booking.getUser();
-						
-						if(u.getRoleid() == 1){
-							adPassenger.setAgentBook(booking.getUser().getUserName()+"("+booking.getUser().getMobile()+")");
-						}else{
-							adPassenger.setAgentBook("USER");
-						}
-						
-						alPassengers.add(adPassenger);
-					}*/
-				
-
+				sms.sendSMS(numbers, "Dear Customer,\r\nYour bus number for PNR : "+pnrNo +" , journeydate : "+jData+" is : "+busNumber);
+	
 				}
 			
-			sms.sendSMS("9004660598"," Bus Number "+busNumber);
+			//SendMail smail = new SendMail();
+			//smail.sendEmail("utpal@techvariable.com", "busNumber ", "number :: "+numbers+" :: Dear Customer,\r\nYour bus number for PNR : "+pnrNo +" , journeydate : "+jData+" is : "+busNumber);
+			
+			//
+			
+			//sms.sendSMS("9004660598"," Bus Number "+busNumber);
 			
 				
 			}
 			catch(Exception ex){
 			
-					System.out.println("ex : [getPassengersForABus] "+ex.toString());
-				}
+				System.out.println("ex : [getPassengersForABus] "+ex.toString());
+			}
 		
 	}
 	

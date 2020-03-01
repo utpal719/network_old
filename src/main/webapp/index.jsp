@@ -17,7 +17,7 @@
     <script src="resource/js/angular-local-storage.js"></script>
     <script src="resource/angularjs/controller/index_cityname.js"></script>
     <script src="resource/angularjs/services/CityService.js"></script>
- 
+    
     <!-- validation for city in One Way tab -->
     <script type="text/javascript">
         function updateSelect(changedSelect, selectId) {
@@ -835,6 +835,7 @@
 
         </div>
 
+	
 
 
         <footer id="main-footer">
@@ -875,11 +876,13 @@
                             <li style="margin-top:3%;"><a href="pages/aboutus.jsp">About Us</a>
                             </li>
 
-                            <li style="margin-top:3%;"><a href="pages/cancellation.jsp">Cancellation Policy</a>
+                            <li style="margin-top:3%;"><a href="pages/cancellationPolicy.jsp">Cancellation Policy</a>
                             </li>
-                            <li style="margin-top:3%;"><a href="pages/printsms.jsp">Print Ticket</a>
+                            <li style="margin-top:3%;"><a href="pages/tandc.jsp">Terms & Condition</a>
                             </li>
-                            <li style="margin-top:3%;"><a href="index.jsp">Home</a>
+                            <li style="margin-top:3%;"><a href="pages/privacy.jsp">Privacy Policy</a>
+                            </li>
+                             <li style="margin-top:3%;"><a href="pages/refund.jsp">Refund Policy</a>
                             </li>
                         </ul>
                     </div>

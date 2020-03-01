@@ -26,10 +26,38 @@ public class Booking implements Comparable {
 	private String boardingPoint;
 	private User user;
 	private String errorMsg;
+	private String hashParam;
+	private String webServiceParam;
+	private String VasForMobileSdkHash;
+	private String PaymentRelatedDetailsForMobileSdkHash;
+
 	
 	
-	
-	
+
+	public String getPaymentRelatedDetailsForMobileSdkHash() {
+		return PaymentRelatedDetailsForMobileSdkHash;
+	}
+	public void setPaymentRelatedDetailsForMobileSdkHash(String paymentRelatedDetailsForMobileSdkHash) {
+		PaymentRelatedDetailsForMobileSdkHash = paymentRelatedDetailsForMobileSdkHash;
+	}
+	public String getVasForMobileSdkHash() {
+		return VasForMobileSdkHash;
+	}
+	public void setVasForMobileSdkHash(String vasForMobileSdkHash) {
+		VasForMobileSdkHash = vasForMobileSdkHash;
+	}
+	public String getWebServiceParam() {
+		return webServiceParam;
+	}
+	public void setWebServiceParam(String webServiceParam) {
+		this.webServiceParam = webServiceParam;
+	}
+	public String getHashParam() {
+		return hashParam;
+	}
+	public void setHashParam(String hashParam) {
+		this.hashParam = hashParam;
+	}
 	public String getErrorMsg() {
 		return errorMsg;
 	}

@@ -5,13 +5,14 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	  console.log("adminController");
 	  
 	  $scope.TicketView = false;
+	  $scope.winnerView = false;
 	  
 	  $scope.user = localStorageService.get("user");
 	  
 	  
     $scope.logout = function(){
     	 localStorage.clear();
-    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
     };
   
     //getAllBuses
@@ -56,6 +57,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
     
     $scope.SendSMS = function(){
     	
+   	
     	if($scope.busnumber1 === undefined){
     		
     		alert("Bus Number is empty");
@@ -63,6 +65,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
     		
     		alert("Select a Bus");
     	}else{
+ 
     		AdminService.SendSMSByBus($scope.journeyDate,$scope.busid , $scope.busnumber1).then(function(promise){
         		
         		alert("SMS sent successfully!!");
@@ -73,6 +76,126 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
     	
     	
     };
+    
+    
+    
+    $scope.lottery = function(){
+    	
+    	console.log("clicked lottery");
+    	 $scope.winnerView = true;
+    	
+      var lotteryData = 
+    	  [
+    		  {
+    		  "PNR" : "PNR-1074443",
+    		  "Journeydate" : "Jun 18, 2019",
+    		  "email" : "suraj34271@gmail.com",
+    		  "mobile" : "9383033793"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1078799",
+    		  "Journeydate" : "Jun 11, 2019",
+    		  "email" : "antaragogoi03@gmail.com",
+    		  "mobile" : "8638801996"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1115152",
+    		  "Journeydate" : "Jun 25, 2019",
+    		  "email" : "dipankardas028@gmail.com",
+    		  "mobile" : "9101315406"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1111825",
+    		  "Journeydate" : "Jun 23, 2019",
+    		  "email" : "aditibhattacharyya20@gmail.com",
+    		  "mobile" : "7086970435"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1102867",
+    		  "Journeydate" : "Jun 19, 2019",
+    		  "email" : "pinku.bhatta26@gmail.com",
+    		  "mobile" : "7002973234"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1128729",
+    		  "Journeydate" : "Jun 30, 2019",
+    		  "email" : "debajanidulia1@gmail.com",
+    		  "mobile" : "9954881404"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1098271",
+    		  "Journeydate" : "Jun 17, 2019",
+    		  "email" : "meghna29baruah@gmail.com",
+    		  "mobile" : "9678314464"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1123363",
+    		  "Journeydate" : "Jun 29, 2019",
+    		  "email" : "talukdarnaba0@gmail.com",
+    		  "mobile" : "9435134702"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1060134",
+    		  "Journeydate" : "Jun 3, 2019",
+    		  "email" : "anuragp787@gmail.com",
+    		  "mobile" : "8486649049"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1082927",
+    		  "Journeydate" : "Jun 12, 2019",
+    		  "email" : "tarunboruah0009@gmail.com",
+    		  "mobile" : "6002465451"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1118264",
+    		  "Journeydate" : "Jun 26, 2019",
+    		  "email" : "pulaksarma1978@gmail.com",
+    		  "mobile" : "9508566759"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1068605",
+    		  "Journeydate" : "Jun 5, 2019",
+    		  "email" : "borpatra.grindra@gmail.com",
+    		  "mobile" : "9854036162"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1125701",
+    		  "Journeydate" : "Jun 29, 2019",
+    		  "email" : "sushmitasonowal70@gmail.com",
+    		  "mobile" : "8399865387"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1096521",
+    		  "Journeydate" : "Jun 17, 2019",
+    		  "email" : "avinavsharma1995@gmail.com",
+    		  "mobile" : "9706599752"
+    		  },
+    		  {
+    		  "PNR" : "PNR-1104202",
+    		  "Journeydate" : "Jun 20, 2019",
+    		  "email" : "gauravbrh00@gmail.com",
+    		  "mobile" : "9101773817"
+    		  },
+    		  {
+        		  "PNR" : "PNR-1093978",
+        		  "Journeydate" : "Jun 16, 2019",
+        		  "email" : "chinmoydutta2002@gmail.com",
+        		  "mobile" : "8787551746"
+        	 }
+
+    		  ]
+
+      
+      
+      
+      var number = Math.floor(Math.random()*lotteryData.length);
+      $scope.winner = lotteryData[number];
+      
+      
+    	
+    };
+    
+    
     
     $scope.cleanupData = function(){
     	
@@ -118,7 +241,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	  
 	    $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
  }); 
  
@@ -130,7 +253,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	 $scope.user = localStorageService.get("user");
 	 $scope.logout = function(){
     	 localStorage.clear();
-    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
     };
     
     $scope.viewCancelledTickets = function(){
@@ -155,7 +278,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	  
     $scope.logout = function(){
     	 localStorage.clear();
-    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
     };
     
     	
@@ -205,7 +328,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	  	  
 	    $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	  
 	  $scope.middleList = localStorageService.get("middleDest");
@@ -216,7 +339,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 			  
 			  AdminService.deleteMidDest(midid).then(function(promise){
 				  
-				  $window.location.href = "https://nwt-techv.rhcloud.com/pages/Admin/ManageBuses.jsp";
+				  $window.location.href = "http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/Admin/ManageBuses.jsp";
 				  
 			  });
 		  };
@@ -233,7 +356,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
   	  
 	    $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	    
 	    
@@ -269,7 +392,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
   	  
 	    $scope.logout = function(){
 	    	 localStorage.clear();
-	    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+	    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
 	    };
 	    
 	    AdminService.getAllCity().then(function(promise){
@@ -361,7 +484,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 			 
 			 AdminService.addBus($scope.fromcity,$scope.tocity,$scope.starttime,$scope.endtime,$scope.seatCapacity,$scope.fare).then(function(promise){
 				 
-				 $window.location.href = "https://nwt-techv.rhcloud.com/pages/Admin/ManageBuses.jsp";
+				 $window.location.href = "http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/Admin/ManageBuses.jsp";
 			 });
 			 
 		 }
@@ -385,7 +508,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 	  			
 	  			AdminService.addNewCity($scope.cityName).then(function(promise){
 	  				
-	  				$window.location.href = 'https://nwt-techv.rhcloud.com/pages/Admin/ManageCities.jsp';
+	  				$window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/Admin/ManageCities.jsp';
 	  				
 	  			});
 	  		}
@@ -467,7 +590,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
 			  
 			  AdminService.addAgent($scope.name,$scope.username,$scope.pwd,$scope.percentage,$scope.address,$scope.email,$scope.mobile).then(function(promise){
 				  
-				  $window.location.href = 'https://nwt-techv.rhcloud.com/pages/Admin/ManageAgents.jsp';
+				  $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com/pages/Admin/ManageAgents.jsp';
 				  
 			  });
 			  

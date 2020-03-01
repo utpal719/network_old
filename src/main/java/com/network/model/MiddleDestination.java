@@ -14,9 +14,22 @@ public class MiddleDestination {
 	private String endTime;
 	private String fromCity;
 	private String toCity;
+	private double oldFare;
+	private double sleeperFare;
 	
 	
-	
+	public double getSleeperFare() {
+		return sleeperFare;
+	}
+	public void setSleeperFare(double sleeperFare) {
+		this.sleeperFare = sleeperFare;
+	}
+	public double getOldFare() {
+		return oldFare;
+	}
+	public void setOldFare(double oldFare) {
+		this.oldFare = oldFare;
+	}
 	public String getFromCity() {
 		return fromCity;
 	}

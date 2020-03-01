@@ -12,8 +12,16 @@ public class Bus {
 	private String travelTime;
 	private String boardingPoints;
 	private String busType;
+	private double oldFare;
+	private double sleeperFare;
 	
 
+	public double getSleeperFare() {
+		return sleeperFare;
+	}
+	public void setSleeperFare(double sleeperFare) {
+		this.sleeperFare = sleeperFare;
+	}
 	public String getBusType() {
 		return busType;
 	}
@@ -73,6 +81,12 @@ public class Bus {
 	}
 	public void setFare(double fare) {
 		this.fare = fare;
+	}
+	public double getOldFare() {
+		return oldFare;
+	}
+	public void setOldFare(double oldFare) {
+		this.oldFare = oldFare;
 	}
 	
 	

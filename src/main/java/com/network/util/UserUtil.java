@@ -1,5 +1,9 @@
 package com.network.util;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,9 +16,20 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.mail.internet.InternetAddress;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import com.network.dbfactory.DBUtil;
 import com.network.model.AdminViewPassenger;
@@ -94,8 +109,7 @@ public class UserUtil {
 
 			
 			conn = DBUtil.getConnection();
-			System.out.println("conn : "+conn.toString());
-			
+		
 			
 			pstm = conn.prepareStatement("select * from bus where fromcityid = ? AND tocityid = ? ");
 			pstm.setInt(1, fromCityId);
@@ -108,7 +122,13 @@ public class UserUtil {
 				//middle = true;
 				
 				//check availability
+				double oldFare = 0;
 				
+				try{
+					oldFare = rs.getDouble("oldfare");
+				}catch(Exception exe){
+					
+				}
 				
 				
 				BusSearch busResult = new BusSearch();
@@ -117,6 +137,8 @@ public class UserUtil {
 				b.setFromCity(fromCity);
 				b.setToCity(toCity);
 				b.setFare(rs.getDouble("fare"));
+				b.setOldFare(oldFare);
+				b.setSleeperFare(rs.getDouble("sleeperfare"));
 				
 				String strStartTime = (rs.getString("starttime"));
 				String strEndTime = (rs.getString("endtime"));
@@ -135,9 +157,7 @@ public class UserUtil {
 				//stopover[1]="Khanapara";
 				busResult.setStopovers(stopover);
 				
-					
-				System.out.println("Start Time is : "+strStartTime);
-				
+			
 		
 			     
 			    if(todayDate.equalsIgnoreCase(startDate)){
@@ -166,14 +186,19 @@ public class UserUtil {
 						
 						for(int i=0;i<alMiddles.size();i++){
 							MiddleDestination mid = (MiddleDestination)alMiddles.get(i);
-							 						 
+							
+							double oldFare = 0;
+							
+							
+							
 							BusSearch busSearch = new BusSearch();
 							Bus b = new Bus();
 							b.setBusId(mid.getBusId());
 							b.setFromCity(getCityNameById(mid.getFromCityId()));
 							b.setToCity(getCityNameById(mid.getToCityId()));
 							b.setFare(mid.getFare());
-							
+							b.setSleeperFare(mid.getSleeperFare());
+							b.setOldFare(mid.getOldFare());
 							b.setStartTime(mid.getStartTime());
 							b.setEndtime(mid.getEndTime());
 							b.setSeatCapacity(getSeatCapacityByBusId(b.getBusId()));
@@ -237,7 +262,7 @@ public class UserUtil {
 			     Date startB1 = sd.parse(_24B1);
 			     Date startB2 = sd.parse(_24B2);
 			  
-			    	 System.out.println("e");
+			  
 			 
 			      diff =  startB1.getTime() - startB2.getTime();
 			     }catch(Exception e){
@@ -318,7 +343,7 @@ public class UserUtil {
 			
 		}
 		
-		System.out.println("isBloked  : "+isBlocked);
+	
 		
 		return isBlocked;
 	}
@@ -332,7 +357,7 @@ public class UserUtil {
 		        // TODO: Avoid using the abbreviations when fetching time zones.
 		        // Use the full Olson zone ID instead.
 		        sd.setTimeZone(TimeZone.getTimeZone("IST"));
-		        System.out.println(sd.format(date));
+		        
 		      
 		        return sd.format(date);
 	}
@@ -399,6 +424,16 @@ public class UserUtil {
 				mid.setFromCityId(fromCityId);
 				mid.setToCityId(toCityId);
 				
+				double oldFare = 0;
+				
+				try{
+					oldFare = rs.getDouble("oldfare");
+				}catch(Exception exe){
+					
+				}
+				
+				mid.setOldFare(oldFare);
+				
 				String seats = rs.getString("seatlist"); 
 				
 				String[] tempSeat = seats.split(",");
@@ -411,6 +446,7 @@ public class UserUtil {
 				
 				mid.setSeatlist(alSeats);
 				mid.setFare(rs.getDouble("fare"));
+				mid.setSleeperFare(rs.getDouble("sleeperfare"));
 				mid.setStartTime(get12HrsTime(rs.getString("starttime")));
 				mid.setEndTime(get12HrsTime(rs.getString("endtime")));
 				
@@ -557,7 +593,6 @@ public class UserUtil {
 		
 		try{
 			conn = DBUtil.getConnection();
-			System.out.println("here : "+conn.toString());
 			pstm = conn.prepareStatement("select * from busbooking where busid = ? AND journeydate = ?");
 			pstm.setInt(1, busId);
 			pstm.setString(2, journeyDate);
@@ -567,7 +602,6 @@ public class UserUtil {
 			
 			busDetails.setBus(getBusByBusId(busId));
 			
-			System.out.println("here : 496 ");
 			
 			ArrayList alSeats = new ArrayList();
 			
@@ -576,7 +610,6 @@ public class UserUtil {
 				int seat = rs.getInt("seatnumber");
 				
 				int uuid = rs.getInt("uuid");
-				System.out.println("here : 500 ");
 				if(checkPaymentForPNR(uuid)){
 				  
 					alSeats.add(seat);
@@ -588,7 +621,6 @@ public class UserUtil {
 			busDetails.setBusId(busId);
 			busDetails.setJourneyDate(journeyDate);
 		
-			System.out.println("here : 5010 ");
 			
 		}catch(Exception ex){
 			System.out.println("ex : "+ex.toString());
@@ -642,8 +674,7 @@ public class UserUtil {
 		Connection conn = null;
 		PreparedStatement pstm = null;
 		ResultSet rs = null;
-		
-		System.out.println("MidId : "+midid);
+
 		
 		//try{
 			conn = DBUtil.getOPenConnection();
@@ -670,11 +701,11 @@ public class UserUtil {
 					
 					int seat = rs.getInt("seatnumber");
 					
-					System.out.println("Booked Seat : "+seat);
+
 					
 					int dbmidId = rs.getInt("midid");
 					
-					System.out.println("DB Mid Id  : "+dbmidId);
+			
 					
 					//if(dbmidId == 0 || dbmidId == midid){
 						alSeats.add(seat);
@@ -726,6 +757,7 @@ public class UserUtil {
 			b = getBusByBusId(busId);
 			MiddleDestination midDest = getMiddleDestById(midId);
 			b.setFare(midDest.getFare());
+			b.setSleeperFare(midDest.getSleeperFare());
 			b.setFromCity(getCityNameById(midDest.getFromCityId()));
 			b.setToCity(getCityNameById(midDest.getToCityId()));
 			b.setStartTime(get12HrsTime(midDest.getStartTime()));
@@ -769,6 +801,7 @@ public class UserUtil {
 				
 				midDest.setMidId(midId);			
 				midDest.setFare(rs.getDouble("fare"));
+				midDest.setSleeperFare(rs.getDouble("sleeperfare"));
 				midDest.setStartTime(rs.getString("starttime"));
 				midDest.setEndTime(rs.getString("endtime"));
 				midDest.setFromCityId(rs.getInt("fromdestinationid"));
@@ -829,7 +862,7 @@ public class UserUtil {
 			
 			for(int i=1;i<b.getSeatCapacity();i++){
 				
-				System.out.println("");
+			
 				
 				if(!alSeats.contains(new Integer(i))){
 					
@@ -858,7 +891,6 @@ public class UserUtil {
 		
 		try{
 			
-			System.out.println("here 880");
 			
 			conn = DBUtil.getOPenConnection();
 			
@@ -868,22 +900,23 @@ public class UserUtil {
 			pstm = conn.prepareStatement("select * from bus where busid = ?");
 			pstm.setInt(1, busId);
 			rs = pstm.executeQuery();
-			System.out.println("here 886");
+		
 			while(rs.next()){
 				
 				bus.setBusId(busId);
 				int fromCityId = rs.getInt("fromcityid");
-				System.out.println("here 886");
+			
 				String fromCity = getCityNameById(fromCityId);
 				int toCityId = rs.getInt("tocityid");
-				System.out.println("here ");
+	
 				String toCity = getCityNameById(toCityId);
 				
-				System.out.println("ehere2");
+		
 				
 				bus.setFromCity(fromCity);
 				bus.setToCity(toCity);
 				bus.setFare(rs.getFloat("fare"));
+				bus.setSleeperFare(rs.getDouble("sleeperfare"));
 			
 				bus.setSeatCapacity(rs.getInt("seatcapacity"));
 				//bus.setSeatCapacity(40);
@@ -931,7 +964,7 @@ public class UserUtil {
 		//create passengers
 			ArrayList alPassengers = new ArrayList();
 			
-			System.out.println("here : "+selectedSeat);
+
 			
 			String[] tempPassengers = selectedSeat.split(",");
 			
@@ -943,9 +976,6 @@ public class UserUtil {
 			for(int i=0;i<tempPassengers.length;i++){
 			
 				
-				System.out.println("seat : "+tempPassengers[i]);
-				
-				System.out.println("name : "+tempNames[i]);
 				
 				Passenger p = new Passenger();
 				p.setPassengerName(tempNames[i]);
@@ -955,12 +985,13 @@ public class UserUtil {
 				
 				alPassengers.add(p);
 				
-				System.out.println("addding");
+
 				
 			}
 			
 			
-			System.out.println("alP "+alPassengers.size());
+			
+			
 			
 			
 			if(alPassengers.size() == 0){
@@ -979,19 +1010,17 @@ public class UserUtil {
 				
 			}
 			
-			System.out.println("at 919");
 			
 			
 			//check Available Balace
 			if(!checkAvailableBalanceUser(user , agentfare)){
-				System.out.println("No cash!");
+
 				booking.setErrorMsg("Your account balance is too low to book the tickets!");
 				return booking;
 				
 			}
 			
-				
-				System.out.println("inside availabel ");
+	
 				msg = msg + " seat Avaibale ";
 				
 				//get the PNR Number
@@ -1016,7 +1045,6 @@ public class UserUtil {
 				booking.setBoardingPoint(boardingPoint);
 				booking.setUser(user);
 				
-				System.out.println("boardingPoint set : "+boardingPoint);
 				
 				if(user.getRoleid() == 2){
 					
@@ -1027,14 +1055,14 @@ public class UserUtil {
 				
 				msg=msg+"hete AT 659 "+booking.getBoardingPoint();
 				
-				System.out.println("here 659 ");
+		
 				
 				//get Start and reporting time
 				if(midId == 0){
-					
-					System.out.println("els");
+				
+				
 					Bus b = getBusByBusId(busId);
-					System.out.println("Bus : "+b.getBusId()+" entered : "+busId +" bus : "+b.getStartTime());
+			
 					
 					booking.setStartTime(b.getStartTime());
 					booking.setReportingTime(get12HrsTime(getReportingTime(get24HrsTime(b.getStartTime()))));
@@ -1044,7 +1072,6 @@ public class UserUtil {
 					MiddleDestination mid = getMiddleDestById(midId);
 					booking.setStartTime(get12HrsTime(mid.getStartTime()));
 					
-					System.out.println("Bus : "+booking.getBusId()+" entered : "+busId +" bus : "+booking.getStartTime());
 					
 					booking.setReportingTime(get12HrsTime(getReportingTime(mid.getStartTime())));
 				}
@@ -1055,11 +1082,27 @@ public class UserUtil {
 					
 					booking.setPnrNumber("PNR-"+pnrid);
 					
+					
 					if(pnrid != 0){
 						
+						if(updateBusBooking(booking,pnrid,midId)){
 						
-						updateBusBooking(booking,pnrid,midId);
+							if(!recheckValidBusTicket(booking)){
+								Booking booking1 = new Booking();
+								booking1.setErrorMsg("Unsuccessful Booking! Please try again");
+								return booking1;
+							}
+							
+						}else{
+							
+							Booking booking1 = new Booking();
+							booking1.setErrorMsg("Unsuccessful Booking! Please try again");
+							return booking1;
+						}
 						
+						
+
+							
 					}else{
 						Booking booking1 = new Booking();
 						booking1.setErrorMsg("Unsuccessful Booking! Please try again");
@@ -1089,6 +1132,19 @@ public class UserUtil {
 			return null;
 		}
 		
+		
+		try{
+			
+			booking.setHashParam(MessageDigestUtil.generateHash(booking));
+			booking.setWebServiceParam(MessageDigestUtil.generateWebServiceHash(booking));
+			booking.setVasForMobileSdkHash(MessageDigestUtil.VasForMobileSdkHash(booking));
+			booking.setPaymentRelatedDetailsForMobileSdkHash(MessageDigestUtil.PaymentRelatedDetailsForMobileSdkHash(booking));
+			
+			
+		}catch(Exception e){
+			
+		}
+		
 		return booking;
 	}
 	
@@ -1112,7 +1168,7 @@ public class UserUtil {
 			
 			
 			for(int i=0;i<tempPassengers.length;i++){
-			
+				
 				
 				Passenger p = new Passenger();
 				p.setPassengerName(tempNames[i]);
@@ -1130,13 +1186,28 @@ public class UserUtil {
 			
 
 			if(!checkAvailableSeat(busId, journeyDate, tempPassengers)){
+	
 				booking.setErrorMsg("Someone else is trying to book the same ticket.");
 				
 				return booking;
 				
 			}
 		
-
+			
+			//check Available Balace
+			
+			if(user.getRoleid() == 2){
+		
+				double fareForAgent = Double.parseDouble(agentfare);
+				if(!checkAvailableBalanceUser(user , fareForAgent)){
+		
+					booking.setErrorMsg("Your account balance is too low to book the tickets!");
+					return booking;
+					
+				}
+			}
+	
+			
 				booking.setBusId(busId);
 				booking.setEmail(email);
 				booking.setMobile(Long.parseLong(mobile));
@@ -1152,8 +1223,8 @@ public class UserUtil {
 				booking.setUser(user);
 				
 				if(user.getRoleid() == 2){
-					
-					//booking.setAgentFare(agentfare+"");
+					double fareForAgent = Double.parseDouble(agentfare);
+					booking.setAgentFare(fareForAgent);
 				}else{
 					booking.setAgentFare(0);
 				}
@@ -1188,26 +1259,32 @@ public class UserUtil {
 					
 				}else{
 					
+				
 					int pnrid = updateBookingTable(booking);
 					
 					booking.setPnrNumber("PNR-"+pnrid);
 					
 					if(pnrid != 0){
-										
+					
 						if(updateBusBooking(booking,pnrid,midId)){
 							
-							//re-check for already booked ticket
 							
+							//re-check for already booked ticket
+					
 							if(recheckValidBusTicket(booking)){
+								
 								SendMail sm = new SendMail();
 								sm.sentBookingConfirmation(booking);
 								
 								SMSUtil sms = new SMSUtil();
-								sms.sendSMS(booking.getMobile()+"", formatSMS(booking));
+								String smsFormat = formatSMS(booking);
+								smsFormat = smsFormat + "\r\nDownload app http://tiny.cc/nw2c0y for better experience";
+								sms.sendSMS(booking.getMobile()+"", smsFormat);
+								sms.sendPromotionalSMS(booking.getMobile()+"");
 							}else{
 								//delete the PNR
-								SendMail sm = new SendMail();
-								sm.sendEmail("utpal@techvariable.com", "eror", "msg "+booking.getPnrNumber()+" bus "+booking.getBusId()+" journey "+booking.getJourneyDate());
+								//SendMail sm = new SendMail();
+								//sm.sendEmail("utpal@techvariable.com", "eror", "msg "+booking.getPnrNumber()+" bus "+booking.getBusId()+" journey "+booking.getJourneyDate());
 								rollBackBooking(booking);
 								
 								Booking booking1 = new Booking();
@@ -1217,7 +1294,7 @@ public class UserUtil {
 							}
 			
 						}else{
-							
+				
 							Booking booking1 = new Booking();
 							booking1.setErrorMsg("Unsuccessful Booking! Please try again");
 							return booking1;
@@ -1225,6 +1302,7 @@ public class UserUtil {
 						}
 		
 					}else{
+					
 						Booking booking1 = new Booking();
 						booking1.setErrorMsg("Unsuccessful Booking! Please try again");
 						return booking1;
@@ -1232,6 +1310,7 @@ public class UserUtil {
 						
 		
 					if(user.getRoleid() == 2){
+				
 						updateAccountBalance(user , agentfare);
 					}
 
@@ -1248,7 +1327,12 @@ public class UserUtil {
 			rollBackBooking(booking);
 			return null;
 		}
-		
+		try{
+			booking.setHashParam(MessageDigestUtil.generateHash(booking));
+		}catch(Exception e){
+			
+		}
+	
 		return booking;
 	}
 	
@@ -1360,7 +1444,7 @@ public class UserUtil {
 						
 						if(checkPaymentForPNR(pUuid)){
 							isValid = false;	
-						}else if((myUuid - pUuid) < 10){
+						}else if((myUuid - pUuid) < 25){
 							isValid = false;	
 						}
 						
@@ -1396,7 +1480,7 @@ public class UserUtil {
 			
 			double newBalance = avBalance - (Double.parseDouble(agentfare));
 			
-			System.out.println("New Av Ban : "+newBalance);
+		
 			
 			conn = DBUtil.getConnection();
 			pstm = conn.prepareStatement("update users set balance = ? where userid = ?");
@@ -1555,7 +1639,7 @@ public class UserUtil {
 	
 	public void updateUserBooking(String pnr , User user){
 		
-		System.out.println("Here ********** ");
+
 		
 		Connection conn = null;
 		PreparedStatement pstm = null;
@@ -1656,6 +1740,10 @@ public class UserUtil {
 		
 		
 		try{
+			
+			if(journeyDate == ""){
+				isAvailable = false;
+			}
 			
 			conn = DBUtil.getOPenConnection();
 			if(conn == null){
@@ -1845,7 +1933,7 @@ public class UserUtil {
 		int bookingid= 0;
 		
 		try{
-			  
+
 			conn = DBUtil.getOPenConnection();
 			if(conn == null){
 				conn = DBUtil.getConnection();
@@ -1862,7 +1950,7 @@ public class UserUtil {
 			try{
 			pstm.setString(8, booking.getAgentFare()+"");
 			}catch(Exception e){
-				System.out.println(e.toString());
+				System.out.println("1949 "+e.toString());
 				pstm.setString(8,"");
 			}
 			pstm.setString(9, booking.getToCity());
@@ -1877,7 +1965,6 @@ public class UserUtil {
 			
 			while(rs.next()){
 				
-				System.out.println("genersted key");
 				
 				bookingid = rs.getInt(1);
 				
@@ -1885,7 +1972,7 @@ public class UserUtil {
 			}
 			
 			
-			
+		
 		}catch(Exception ex){
 			System.out.println("ex : [updateBookingTable] "+ex.toString());
 			
@@ -2006,6 +2093,7 @@ public class UserUtil {
 			try{
 				
 				uuid = Integer.parseInt(pnrNumber.substring(4));
+				
 			}catch(Exception e){
 				uuid = Integer.parseInt(pnrNumber);
 			}
@@ -2062,6 +2150,146 @@ public class UserUtil {
 	}
 	
 	
+	
+	public Booking getBookingByPNRAndroid(String pnrNumber , int userid , String mobile){
+		
+		Booking booking =  new Booking();
+		booking.setErrorMsg("");
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		int counter = 0;
+		try{
+			
+			int uuid =0 ;
+			
+			try{
+				
+				uuid = Integer.parseInt(pnrNumber.substring(4));
+				
+			}catch(Exception e){
+				uuid = Integer.parseInt(pnrNumber);
+			}
+			
+			conn = DBUtil.getOPenConnection();
+			if(conn == null){
+				conn = DBUtil.getConnection();
+			}
+			pstm = conn.prepareStatement("select * from bookingDetails where uuid = ?");
+			pstm.setInt(1, uuid);
+			
+			rs = pstm.executeQuery();
+			
+			while(rs.next()){
+				counter++;
+				int dbUserid = rs.getInt("userid");
+				long dbMobile = rs.getLong("mobile");
+				
+				String strDbMobile = dbMobile+"";
+				
+				
+				if(dbUserid !=0 && userid == 0){
+					booking.setErrorMsg("Please login to cancel the ticket!");
+					
+				}else if(userid !=0 && dbUserid == userid){
+					
+
+					booking.setBusId(rs.getInt("busid"));
+					booking.setEmail(rs.getString("email"));
+					booking.setMobile(dbMobile);
+					booking.setJourneyDate(rs.getString("journeydate"));
+					booking.setPaymentStatus(rs.getString("paymentstatus"));
+			
+					booking.setTotdalFare(rs.getDouble("totalfare"));
+					booking.setPnrNumber(pnrNumber);
+					booking.setFromCity(rs.getString("fromcity"));
+					booking.setToCity(rs.getString("tocity"));
+					booking.setStartTime(rs.getString("starttime"));
+					booking.setBoardingPoint(rs.getString("boardingpoint"));
+					booking.setReportingTime(get12HrsTime(getReportingTime(get24HrsTime(booking.getStartTime()))));	
+					try{
+					booking.setAgentFare(Double.parseDouble(rs.getString("agentfare")));
+					}catch(Exception e){
+						booking.setAgentFare(0);
+					}
+					//get Passengers
+					ArrayList alPassenger = getPassengersByPNR(pnrNumber);
+					booking.setPassengerList(alPassenger);
+					booking.setNoOfSeat(alPassenger.size());
+					booking.setUser(getUserById(rs.getInt("userid")));
+					
+					try{
+						booking.setTransId(rs.getString("transid")+"");
+					}catch(Exception e){
+						System.out.println("e "+e.toString());
+					}
+					
+					
+					
+				}else if(strDbMobile.equalsIgnoreCase(mobile)){
+
+					
+					
+					booking.setBusId(rs.getInt("busid"));
+					booking.setEmail(rs.getString("email"));
+					booking.setMobile(dbMobile);
+					booking.setJourneyDate(rs.getString("journeydate"));
+					booking.setPaymentStatus(rs.getString("paymentstatus"));
+			
+					booking.setTotdalFare(rs.getDouble("totalfare"));
+					booking.setPnrNumber(pnrNumber);
+					booking.setFromCity(rs.getString("fromcity"));
+					booking.setToCity(rs.getString("tocity"));
+					booking.setStartTime(rs.getString("starttime"));
+					booking.setBoardingPoint(rs.getString("boardingpoint"));
+					booking.setReportingTime(get12HrsTime(getReportingTime(get24HrsTime(booking.getStartTime()))));	
+					try{
+					booking.setAgentFare(Double.parseDouble(rs.getString("agentfare")));
+					}catch(Exception e){
+						booking.setAgentFare(0);
+					}
+					//get Passengers
+					ArrayList alPassenger = getPassengersByPNR(pnrNumber);
+					booking.setPassengerList(alPassenger);
+					booking.setNoOfSeat(alPassenger.size());
+					booking.setUser(getUserById(rs.getInt("userid")));
+					
+					try{
+						booking.setTransId(rs.getString("transid")+"");
+					}catch(Exception e){
+						System.out.println("e "+e.toString());
+					}
+					
+					
+					
+				}else{
+					
+					if(userid == 0 ){
+						booking.setErrorMsg("Please enter the correct mobile/pnr number");
+					}else{
+						booking.setErrorMsg("Please enter a correct pnr number.");
+					}
+					
+				}
+				
+				
+
+				
+				
+			}
+			
+		}catch(Exception ex){
+			System.out.println("ex : [getBookingByPNR] "+ex.toString());
+		}
+		
+		if(counter == 0){
+			booking.setErrorMsg("Please enter a correct pnr number.");
+		}
+		
+		return booking;
+	}
+	
+	
 	public ArrayList getPassengersByPNR(String pnrNumber){
 		
 		ArrayList alPassenger = new ArrayList();
@@ -2082,7 +2310,7 @@ public class UserUtil {
 				
 				String subStr = pnrNumber.substring(4);
 				
-				System.out.println("SUBSTRing "+subStr);
+			
 				
 				uuid = Integer.parseInt(subStr);
 			}catch(Exception e){
@@ -2152,12 +2380,11 @@ public class UserUtil {
 		try{
 			
 			pin = generatePIN();
-			System.out.println(" pin : "+pnrNumber);
+		
 			
 			//get email
 			Booking b = getBookingByPNR(pnrNumber);
-			
-			System.out.println("b : "+b.getEmail());
+	
 			//sent to mail
 			
 			SendMail sm = new SendMail();
@@ -2201,7 +2428,7 @@ public class UserUtil {
 			
 			//check if a PNR Number is previous date
 			
-			System.out.println("*********************88");
+		
 			
 			//if(!checkIfNotStarted(pnrNumber)){
 			
@@ -2278,15 +2505,10 @@ public class UserUtil {
 		     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
 		     String todayTime = sd.format(date);
 		     
-		     System.out.println("today : " +todayTime);
-			
-		     
-		     
-		     System.out.println("Journey Date : "+originalBooking.getJourneyDate()+" start Time :  "+originalBooking.getStartTime());
+		    
 	
 		     String twntyfourHrsFormatStart = get24HrsTime(originalBooking.getStartTime());
 		     
-		     System.out.println("current : "+todayTime+" start : "+twntyfourHrsFormatStart );
 		     
 		     
 		     Date dDate = sd.parse(todayTime);
@@ -2294,11 +2516,11 @@ public class UserUtil {
 		     
 		     long diff =  startDate.getTime() - dDate.getTime();
 		     
-		     System.out.println("diff : "+diff);
+		  
 		     
 				int diffhours = (int) (diff / (60 * 60 * 1000));
 				DecimalFormat crunchifyFormatter = new DecimalFormat("###,###");
-				System.out.println("difference between hours: " + crunchifyFormatter.format(diffhours));
+				
 	 
 		     
 				SimpleDateFormat sdDate = new SimpleDateFormat(
@@ -2309,7 +2531,7 @@ public class UserUtil {
 			
 			   String journeyDate = originalBooking.getJourneyDate();
 			   
-			   System.out.println("todateDate : "+todayDate+" journeyDate : "+journeyDate);
+		
 			     
 			   Date toDate = sdDate.parse(todayDate);
 			   Date jDate = sdDate.parse(journeyDate);
@@ -2319,8 +2541,7 @@ public class UserUtil {
 				 int intDiff = Integer.parseInt(crunchifyFormatter.format(diffhours));
 
 				 if(intDiff <=2){
-					 
-					 System.out.println("below 2 here");
+
 					 return 0;
 				 }
 			 }			     
@@ -2338,12 +2559,11 @@ public class UserUtil {
 				if(passengers.indexOf(",") > -1){
 					
 				
-					System.out.println("more then 1");
+			
 					tempP = passengers.split(",");
 					for(int x=0;x<tempP.length;x++){
 						String[] eachP = tempP[x].split("\\|");
-						
-						System.out.println("each P  "+eachP[0]+" seat : "+eachP[1]);
+
 						Passenger p = new Passenger();
 						p.setPassengerId(Integer.parseInt(eachP[0]));
 						p.setSeatNumber(Integer.parseInt(eachP[1]));
@@ -2353,11 +2573,10 @@ public class UserUtil {
 					}
 				}else{
 					
-					System.out.println("only one "+passengers );
+			
 					
 					String[] eachP = passengers.split("\\|");
 					
-					System.out.println("each P  "+eachP[0]+" seat : "+eachP[1]);
 					Passenger p = new Passenger();
 					p.setPassengerId(Integer.parseInt(eachP[0]));
 					p.setSeatNumber(Integer.parseInt(eachP[1]));
@@ -2391,7 +2610,7 @@ public class UserUtil {
 					 
 					 AdminUtil admutil = new AdminUtil();
 						admutil.recharge(originalBooking.getUser().getUserid(), newAmount);
-					System.out.println("Total Refund Amount : Agent ****  "+newAmount);
+				
 					
 				}
 				
@@ -2403,7 +2622,7 @@ public class UserUtil {
 				Booking booking = getBookingByPNR(pnrNumber);
 				
 				SMSUtil sms = new SMSUtil();
-				sms.sendSMS(booking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully.");
+				sms.sendSMS(originalBooking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully.For tickets booked via online payment, amount will be refunded within 15-20 working days.");
 				
 				
 		//	}
@@ -2415,7 +2634,8 @@ public class UserUtil {
 	}
 	
 	
-	public int cancelBookingMobile(String pnrNumber,String passengers){
+	
+public int cancelBookingAgent(String pnrNumber,String passengers , int userid){
 		
 		int refundAmt = 0;
 		int id= 0 ;
@@ -2451,15 +2671,10 @@ public class UserUtil {
 		     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
 		     String todayTime = sd.format(date);
 		     
-		     System.out.println("today : " +todayTime);
-			
-		     
-		     
-		     System.out.println("Journey Date : "+originalBooking.getJourneyDate()+" start Time :  "+originalBooking.getStartTime());
+		    
 	
 		     String twntyfourHrsFormatStart = get24HrsTime(originalBooking.getStartTime());
 		     
-		     System.out.println("current : "+todayTime+" start : "+twntyfourHrsFormatStart );
 		     
 		     
 		     Date dDate = sd.parse(todayTime);
@@ -2467,11 +2682,11 @@ public class UserUtil {
 		     
 		     long diff =  startDate.getTime() - dDate.getTime();
 		     
-		     System.out.println("diff : "+diff);
+		  
 		     
 				int diffhours = (int) (diff / (60 * 60 * 1000));
 				DecimalFormat crunchifyFormatter = new DecimalFormat("###,###");
-				System.out.println("difference between hours: " + crunchifyFormatter.format(diffhours));
+				
 	 
 		     
 				SimpleDateFormat sdDate = new SimpleDateFormat(
@@ -2482,7 +2697,7 @@ public class UserUtil {
 			
 			   String journeyDate = originalBooking.getJourneyDate();
 			   
-			   System.out.println("todateDate : "+todayDate+" journeyDate : "+journeyDate);
+		
 			     
 			   Date toDate = sdDate.parse(todayDate);
 			   Date jDate = sdDate.parse(journeyDate);
@@ -2492,8 +2707,165 @@ public class UserUtil {
 				 int intDiff = Integer.parseInt(crunchifyFormatter.format(diffhours));
 
 				 if(intDiff <=2){
+
+					 return 0;
+				 }
+			 }			     
+				
+		
+			 conn = DBUtil.getOPenConnection();
+				if(conn == null){
+					conn = DBUtil.getConnection();
+				}
+				pstm = conn.prepareStatement("delete from busbooking where seatnumber = ? AND uuid = ?");
+				
+				String[] tempP = null;
+				ArrayList alPass = new ArrayList();
+				
+				if(passengers.indexOf(",") > -1){
+					
+				
+			
+					tempP = passengers.split(",");
+					for(int x=0;x<tempP.length;x++){
+						String[] eachP = tempP[x].split("\\|");
+
+						Passenger p = new Passenger();
+						p.setPassengerId(Integer.parseInt(eachP[0]));
+						p.setSeatNumber(Integer.parseInt(eachP[1]));
+						
+						alPass.add(p);
+						
+					}
+				}else{
+					
+			
+					
+					String[] eachP = passengers.split("\\|");
+					
+					Passenger p = new Passenger();
+					p.setPassengerId(Integer.parseInt(eachP[0]));
+					p.setSeatNumber(Integer.parseInt(eachP[1]));
+					
+					alPass.add(p);
+					
+					tempP = new String[1];
+					tempP[0] = passengers;
+				}
+				//String[] 
+
+				for(int i =0;i<alPass.size();i++){
+					Passenger p = (Passenger)alPass.get(i);
+					pstm.setInt(1, p.getSeatNumber());
+					pstm.setInt(2, uuid);
+					pstm.addBatch();
+				}
+				
+				pstm.executeBatch();
+
+				updateBookingDetailsTable(uuid , alPass);
+				
+				
+				//deleteFromBusBookingWeb(pnrNumber,alPass);
+				
+				isCancelled = true;
+				double newAmount = 0.0;
+				
+				if(originalBooking.getUser().getRoleid() == 2){
+					 newAmount = (originalBooking.getAgentFare() / originalBooking.getNoOfSeat() ) * alPass.size();
 					 
-					 System.out.println("below 2 here");
+					 AdminUtil admutil = new AdminUtil();
+						admutil.recharge(originalBooking.getUser().getUserid(), newAmount);
+				
+					
+				}
+				
+				
+				
+				
+				refundAmt = updateCancelTableAgent(pnrNumber,tempP,originalBooking , userid);
+
+				Booking booking = getBookingByPNR(pnrNumber);
+				
+				SMSUtil sms = new SMSUtil();
+				sms.sendSMS(originalBooking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully.For tickets booked via online payment, amount will be refunded within 15-20 working days.");
+				
+				
+		//	}
+		}catch(Exception ex){
+			System.out.println("ex: [cancelBooking] "+ex.toString());
+		}
+		return refundAmt;
+		
+	}
+	
+	public int cancelBookingMobile(String pnrNumber,String passengers){
+		
+		int refundAmt = 0;
+		int id= 0 ;
+		boolean isCancelled = false;
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		
+		Booking originalBooking = getBookingByPNR(pnrNumber);
+		
+		try{
+			
+			
+			int uuid = 0;
+			
+			try{
+				
+				uuid = Integer.parseInt(pnrNumber.substring(4));
+			}catch(Exception e){
+				uuid = Integer.parseInt(pnrNumber);
+			}
+			
+			//check if a PNR Number is previous date
+			
+		
+			
+			
+			//check the refund policy
+			 SimpleDateFormat sd = new SimpleDateFormat(
+		              "HH:mm");
+		     Date date = new Date();    
+		     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
+		     String todayTime = sd.format(date);
+		     
+
+		     String twntyfourHrsFormatStart = get24HrsTime(originalBooking.getStartTime());
+		   
+		     Date dDate = sd.parse(todayTime);
+		     Date startDate = sd.parse(twntyfourHrsFormatStart);
+		     
+		     long diff =  startDate.getTime() - dDate.getTime();
+
+		     
+				int diffhours = (int) (diff / (60 * 60 * 1000));
+				DecimalFormat crunchifyFormatter = new DecimalFormat("###,###");
+			
+				SimpleDateFormat sdDate = new SimpleDateFormat(
+			              "MMM d, yyyy");
+			         
+			     sdDate.setTimeZone(TimeZone.getTimeZone("IST")); 
+			     String todayDate = sdDate.format(date);	
+			
+			   String journeyDate = originalBooking.getJourneyDate();
+			   
+		
+			   Date toDate = sdDate.parse(todayDate);
+			   Date jDate = sdDate.parse(journeyDate);
+			   
+			 if(todayDate.equalsIgnoreCase(journeyDate)){
+				
+				 int intDiff = Integer.parseInt(crunchifyFormatter.format(diffhours));
+
+				 if(intDiff <=2){
+					 
+					 
 					 return 0;
 				 }
 			 }			     
@@ -2511,7 +2883,7 @@ public class UserUtil {
 				if(passengers.indexOf(",") > -1){
 					
 				
-					System.out.println("more then 1");
+
 					tempP = passengers.split(",");
 					for(int x=0;x<tempP.length;x++){
 						/*String[] eachP = tempP[x].split("\\|");
@@ -2526,7 +2898,7 @@ public class UserUtil {
 					}
 				}else{
 					
-					System.out.println("only one "+passengers );
+				
 					
 				//	String[] eachP = passengers.split("\\|");
 					
@@ -2564,8 +2936,7 @@ public class UserUtil {
 					 
 					 AdminUtil admutil = new AdminUtil();
 						admutil.recharge(originalBooking.getUser().getUserid(), newAmount);
-					System.out.println("Total Refund Amount : Agent ****  "+newAmount);
-					
+				
 				}
 				
 				
@@ -2576,7 +2947,162 @@ public class UserUtil {
 				Booking booking = getBookingByPNR(pnrNumber);
 				
 				SMSUtil sms = new SMSUtil();
-				sms.sendSMS(booking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully.");
+				sms.sendSMS(originalBooking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully. For tickets booked via online payment, amount will be refunded within 15-20 working days.");
+				
+				
+		//	}
+		}catch(Exception ex){
+			System.out.println("ex: [cancelBooking] "+ex.toString());
+		}
+		return refundAmt;
+		
+	}
+	
+	
+	
+public int cancelBookingAndroid(String pnrNumber,String passengers , int userid, String mobile){
+		
+		int refundAmt = 0;
+		int id= 0 ;
+		boolean isCancelled = false;
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		
+		Booking originalBooking = getBookingByPNR(pnrNumber);
+		
+		try{
+			
+			
+			int uuid = 0;
+			
+			try{
+				
+				uuid = Integer.parseInt(pnrNumber.substring(4));
+			}catch(Exception e){
+				uuid = Integer.parseInt(pnrNumber);
+			}
+			
+			//check if a PNR Number is previous date
+			
+			//check the refund policy
+			 SimpleDateFormat sd = new SimpleDateFormat(
+		              "HH:mm");
+		     Date date = new Date();    
+		     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
+		     String todayTime = sd.format(date);
+		 
+		     String twntyfourHrsFormatStart = get24HrsTime(originalBooking.getStartTime());
+		     
+		     Date dDate = sd.parse(todayTime);
+		     Date startDate = sd.parse(twntyfourHrsFormatStart);
+		     
+		     long diff =  startDate.getTime() - dDate.getTime();
+		     
+		
+		     
+				int diffhours = (int) (diff / (60 * 60 * 1000));
+				DecimalFormat crunchifyFormatter = new DecimalFormat("###,###");
+				
+				SimpleDateFormat sdDate = new SimpleDateFormat(
+			              "MMM d, yyyy");
+			         
+			     sdDate.setTimeZone(TimeZone.getTimeZone("IST")); 
+			     String todayDate = sdDate.format(date);	
+			
+			   String journeyDate = originalBooking.getJourneyDate();
+			   
+			 
+			     
+			   Date toDate = sdDate.parse(todayDate);
+			   Date jDate = sdDate.parse(journeyDate);
+			   
+			 if(todayDate.equalsIgnoreCase(journeyDate)){
+				
+				 int intDiff = Integer.parseInt(crunchifyFormatter.format(diffhours));
+
+				 if(intDiff <=2){
+					 
+			
+					 return 0;
+				 }
+			 }			     
+				
+		
+			 conn = DBUtil.getOPenConnection();
+				if(conn == null){
+					conn = DBUtil.getConnection();
+				}
+				pstm = conn.prepareStatement("delete from busbooking where bookingid = ? AND uuid = ?");
+				
+				String[] tempP = null;
+				ArrayList alPass = new ArrayList();
+				
+				if(passengers.indexOf(",") > -1){
+					
+				
+					tempP = passengers.split(",");
+					for(int x=0;x<tempP.length;x++){
+						/*String[] eachP = tempP[x].split("\\|");
+						
+						System.out.println("each P  "+eachP[0]+" seat : "+eachP[1]);*/
+						Passenger p = new Passenger();
+						p.setPassengerId(Integer.parseInt(tempP[x]));
+						//p.setSeatNumber(Integer.parseInt(eachP[1]));
+						
+						alPass.add(p);
+						
+					}
+				}else{
+					
+					
+				//	String[] eachP = passengers.split("\\|");
+					
+					//System.out.println("each P  "+eachP[0]+" seat : "+eachP[1]);
+					Passenger p = new Passenger();
+					p.setPassengerId(Integer.parseInt(passengers));
+					//p.setSeatNumber(Integer.parseInt(eachP[1]));
+					
+					alPass.add(p);
+					
+					tempP = new String[1];
+					tempP[0] = passengers;
+				}
+				//String[] 
+
+				for(int i =0;i<alPass.size();i++){
+					Passenger p = (Passenger)alPass.get(i);
+					pstm.setInt(1, p.getPassengerId());
+					pstm.setInt(2, uuid);
+					pstm.addBatch();
+				}
+				
+				pstm.executeBatch();
+
+				updateBookingDetailsTable(uuid , alPass);
+				
+				
+				//deleteFromBusBookingWeb(pnrNumber,alPass);
+				
+				isCancelled = true;
+				double newAmount = 0.0;
+				
+				if(originalBooking.getUser().getRoleid() == 2){
+					 newAmount = (originalBooking.getAgentFare() / originalBooking.getNoOfSeat() ) * alPass.size();
+					 
+					 AdminUtil admutil = new AdminUtil();
+					 admutil.recharge(originalBooking.getUser().getUserid(), newAmount);
+				
+				}
+				
+				
+				refundAmt = updateCancelTableAndroid(pnrNumber,tempP,originalBooking, userid, mobile);
+
+				Booking booking = getBookingByPNR(pnrNumber);
+				
+				SMSUtil sms = new SMSUtil();
+				sms.sendSMS(originalBooking.getMobile()+"", "Network Travels : \r\nYour booking with PNR : "+pnrNumber+" has been cancelled successfully. For tickets booked via online payment, amount will be refunded within 15-20 working days.");
 				
 				
 		//	}
@@ -2652,7 +3178,7 @@ public class UserUtil {
 				
 				Passenger p = (Passenger)alPass.get(i);
 				
-				System.out.println("deleting passengers : "+pnrNumber +p.getPassengerId()+" seat "+p.getSeatNumber());
+				
 				
 				pstm = conn.prepareStatement("delete from busbooking where pnrnumber = '"+pnrNumber+"' and seatnumber = "+p.getSeatNumber()+" limit 1");
 	/*			pstm.setString(1, pnrNumber);
@@ -2702,9 +3228,145 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		
 	}
 	
+
+public int  updateCancelTableAndroid(String pnrNumber,String[] temp,Booking originalBooking , int userid , String mobile){
+	
+	//Newly added for refund amount
+	double refundAmount = 0.0;
+	
+	int id= 0;
+	Connection conn = null;
+	PreparedStatement pstm = null;
+	ResultSet rs= null;
+	String cancelid = getSequenceCancelNumber();
+
+	try{
+		
+		SimpleDateFormat sd = new SimpleDateFormat(
+	              "MMM d, yyyy");
+	     Date date = new Date();    
+	     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
+	     String todayDate = sd.format(date);
+		
+	     Date dDate = sd.parse(todayDate);
+	     
+	     String curentTime= new SimpleDateFormat("HH:mm").format(date);
+	    
+	     refundAmount=  calculateRefund(pnrNumber,temp,originalBooking);
+	     
+	    
+
+	     conn = DBUtil.getOPenConnection();
+		
+	     if(conn == null){
+			conn = DBUtil.getConnection();
+	     }
+		
+		pstm = conn.prepareStatement("insert into cancel(cancelid,pnrnumber,canceldate,canceltime,refundamount,payment ,transid , mobile , email ,journeydate ,busid , canceluserid , cancelmobile) values(?,?,?,?,?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+		pstm.setString(1, cancelid);
+		pstm.setString(2, pnrNumber);
+		pstm.setString(3, todayDate);
+		pstm.setString(4, curentTime);
+		pstm.setDouble(5, refundAmount);
+		pstm.setString(6, "Not Intiated");
+		pstm.setString(7, originalBooking.getTransId());
+		pstm.setString(8, originalBooking.getMobile()+"");
+		pstm.setString(9, originalBooking.getEmail());
+		pstm.setString(10, originalBooking.getJourneyDate());
+		pstm.setInt(11, originalBooking.getBusId());
+		pstm.setInt(12, userid);
+		pstm.setString(13, mobile);
+		
+		
+		pstm.executeUpdate();
+		rs = pstm.getGeneratedKeys();
+		
+		while(rs.next()){
+			id = rs.getInt(1);
+		}
+	
+			
+		}catch(Exception ex){
+			System.out.println("ex [updateCancelTable] "+ex.toString());
+			
+		}
+		
+		System.out.println("here at id : "+id);
+		
+		return id;
+}
+
+
+
+public int  updateCancelTable(String pnrNumber,String[] temp,Booking originalBooking ){
+	
+	//Newly added for refund amount
+	double refundAmount = 0.0;
+	
+	int id= 0;
+	Connection conn = null;
+	PreparedStatement pstm = null;
+	ResultSet rs= null;
+	String cancelid = getSequenceCancelNumber();
+
+	try{
+		
+		SimpleDateFormat sd = new SimpleDateFormat(
+	              "MMM d, yyyy");
+	     Date date = new Date();    
+	     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
+	     String todayDate = sd.format(date);
+		
+	     Date dDate = sd.parse(todayDate);
+	     
+	     String curentTime= new SimpleDateFormat("HH:mm").format(date);
+	    
+	     refundAmount=  calculateRefund(pnrNumber,temp,originalBooking);
+	     
+	    
+
+	     conn = DBUtil.getOPenConnection();
+		
+	     if(conn == null){
+			conn = DBUtil.getConnection();
+	     }
+		
+	pstm = conn.prepareStatement("insert into cancel(cancelid,pnrnumber,canceldate,canceltime,refundamount,payment ,transid , mobile , email ,journeydate ,busid) values(?,?,?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+	pstm.setString(1, cancelid);
+	pstm.setString(2, pnrNumber);
+	pstm.setString(3, todayDate);
+	pstm.setString(4, curentTime);
+	pstm.setDouble(5, refundAmount);
+	pstm.setString(6, "Not Intiated");
+	pstm.setString(7, originalBooking.getTransId());
+	pstm.setString(8, originalBooking.getMobile()+"");
+	pstm.setString(9, originalBooking.getEmail());
+	pstm.setString(10, originalBooking.getJourneyDate());
+	pstm.setInt(11, originalBooking.getBusId());
 	
 	
-	public int  updateCancelTable(String pnrNumber,String[] temp,Booking originalBooking ){
+	pstm.executeUpdate();
+	rs = pstm.getGeneratedKeys();
+	
+	while(rs.next()){
+		id = rs.getInt(1);
+	}
+
+		
+	}catch(Exception ex){
+		System.out.println("ex [updateCancelTable] "+ex.toString());
+		
+	}
+	
+	System.out.println("here at id : "+id);
+	
+	return id;
+}
+
+
+	
+	
+	public int  updateCancelTableAgent(String pnrNumber,String[] temp,Booking originalBooking , int userid ){
 		
 		//Newly added for refund amount
 		double refundAmount = 0.0;
@@ -2729,7 +3391,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		    
 		     refundAmount=  calculateRefund(pnrNumber,temp,originalBooking);
 		     
-		     System.out.println("refund amount : "+refundAmount);
+		    
 
 		     conn = DBUtil.getOPenConnection();
 			
@@ -2737,7 +3399,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 				conn = DBUtil.getConnection();
 		     }
 			
-		pstm = conn.prepareStatement("insert into cancel(cancelid,pnrnumber,canceldate,canceltime,refundamount,payment ,transid , mobile , email ,journeydate ,busid) values(?,?,?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+		pstm = conn.prepareStatement("insert into cancel(cancelid,pnrnumber,canceldate,canceltime,refundamount,payment ,transid , mobile , email ,journeydate ,busid , canceluserid) values(?, ?,?,?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 		pstm.setString(1, cancelid);
 		pstm.setString(2, pnrNumber);
 		pstm.setString(3, todayDate);
@@ -2749,6 +3411,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		pstm.setString(9, originalBooking.getEmail());
 		pstm.setString(10, originalBooking.getJourneyDate());
 		pstm.setInt(11, originalBooking.getBusId());
+		pstm.setInt(12, userid);
 		
 		
 		pstm.executeUpdate();
@@ -2802,7 +3465,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 			
 			double eachPrice = originalFare / originalBooking.getPassengerList().size();
 			
-			System.out.println("each price : "+eachPrice);
+			
 			
 			 SimpleDateFormat sd = new SimpleDateFormat(
 		              "MMM d, yyyy");
@@ -2810,7 +3473,6 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		     sd.setTimeZone(TimeZone.getTimeZone("IST")); 
 		     String todayDate = sd.format(date);
 		     
-		     System.out.println("today : " +todayDate);
 			
 		     Date dDate = sd.parse(todayDate);
 		     
@@ -2852,13 +3514,12 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		    	 }
 		     }*/
 			
-			System.out.println("deduction is : "+deduction +" temp length : "+temp.length);
+		
 			
 			double totalEligible = eachPrice * temp.length;
 			
 			totalEligible = totalEligible - (deduction * totalEligible);
-			
-			System.out.println("totalElogible : "+totalEligible);
+
 			
 			refundAmount = totalEligible;
 			
@@ -2882,9 +3543,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 			if(conn == null){
 				conn = DBUtil.getConnection();
 			}
-			
-			System.out.println("temp: " +temp);
-			
+					
 			for(int i=0;i<temp.length;i++){
 				pstm = conn.prepareStatement("delete from busbooking where  pnrnumber = ? limit 1");
 				pstm.setString(1, pnrNumber);
@@ -2906,9 +3565,10 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		
 		try{	
 				conn = DBUtil.getConnection();
-				pstm = conn.prepareStatement("select * from users where username = ? and password  = ?");
+				pstm = conn.prepareStatement("select * from users where username = ? and password  = ? and status = ?");
 				pstm.setString(1, userName);
 				pstm.setString(2, pwd);
+				pstm.setString(3, "active");
 				
 				rs = pstm.executeQuery();
 				
@@ -2942,8 +3602,10 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 			if(conn == null){
 				conn = DBUtil.getConnection();
 			}
-				pstm = conn.prepareStatement("select * from users where userid  = ?");
+				pstm = conn.prepareStatement("select * from users where userid  = ? and status = ?");
 				pstm.setInt(1, userId);
+				pstm.setString(2, "active");
+				
 			
 				
 				rs = pstm.executeQuery();
@@ -2965,6 +3627,40 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		return u;
 	}
 	
+	
+	public User getAgentUserById(int userId){
+		User u = new User();
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rs= null;
+		
+		try{
+		
+			conn = DBUtil.getOPenConnection();
+			if(conn == null){
+				conn = DBUtil.getConnection();
+			}
+				pstm = conn.prepareStatement("select * from users where userid  = ?");
+				pstm.setInt(1, userId);
+			
+				rs = pstm.executeQuery();
+				
+				while(rs.next()){
+					
+					u.setUserid(rs.getInt("userid"));
+					u.setUserName(rs.getString("username"));
+					u.setEmail(rs.getString("email"));
+					u.setMobile(rs.getLong("mobile"));
+					u.setRoleid(rs.getInt("role"));
+					u.setPercentage(rs.getDouble("percentage"));
+				}
+			
+		}catch(Exception ex){
+			System.out.println("ex : "+ex.toString());
+		}
+		
+		return u;
+	}
 	
 	
 	public boolean checkIfNotStarted(String pnrNumber){
@@ -3077,15 +3773,19 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 			
 			while(rs.next()){
 				
-				Booking booking = new Booking();
-				booking.setPnrNumber("PNR-"+rs.getInt("uuid"));
-				booking.setToCity(rs.getString("tocity"));
-				booking.setFromCity(rs.getString("fromcity"));
-				booking.setJourneyDate(rs.getString("journeydate"));
-				booking.setNoOfSeat(rs.getInt("noofseat"));
-				//booking.setAgentFare(rs.getString("agentfare"));
-				booking.setTotdalFare(rs.getDouble("totalfare"));
-				al.add(booking);
+				String paymentStatus = rs.getString("paymentstatus");
+				
+				if(paymentStatus.equalsIgnoreCase("SUCCESS") || paymentStatus.equalsIgnoreCase("In Cash")){
+					Booking booking = new Booking();
+					booking.setPnrNumber("PNR-"+rs.getInt("uuid"));
+					booking.setToCity(rs.getString("tocity"));
+					booking.setFromCity(rs.getString("fromcity"));
+					booking.setJourneyDate(rs.getString("journeydate"));
+					booking.setNoOfSeat(rs.getInt("noofseat"));
+					//booking.setAgentFare(rs.getString("agentfare"));
+					booking.setTotdalFare(rs.getDouble("totalfare"));
+					al.add(booking);
+				}
 				
 			}
 			
@@ -3254,13 +3954,14 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		try{
 			
 			conn = DBUtil.getConnection();
-			pstm = conn.prepareStatement("insert into users (username,password,email,mobile,role,name) values(?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+			pstm = conn.prepareStatement("insert into users (username,password,email,mobile,role,name,status) values(?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 			pstm.setString(1, username);
 			pstm.setString(2, password);
 			pstm.setString(3, email);
 			pstm.setLong(4, mobile);
 			pstm.setInt(5, 3);
 			pstm.setString(6, name);
+			pstm.setString(7, "active");
 			
 			pstm.executeUpdate();
 			
@@ -3284,10 +3985,227 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 	}
 	 
 	
+	public Booking makePaymentBookingPayu(String pnr, String hash, String tansStatus) {
+		
+		
+		int uuid = 0;
+		
+		try{
+			uuid = Integer.parseInt(pnr.substring(4));
+			
+		}catch(Exception e){
+			
+			uuid = Integer.parseInt(pnr);
+		}
+		
+		
+		
+		Booking booking=getBookingByPNR(pnr);
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		
+		String status = "Payment Due";
+		
+		if(tansStatus.trim().equalsIgnoreCase("SUCCESS")){
+			status = "SUCCESS";
+			
+			
+			try{
+				  
+				conn = DBUtil.getOPenConnection();
+				if(conn == null){
+					conn = DBUtil.getConnection();
+				}
+				pstm = conn.prepareStatement("update bookingDetails set transid = ?,paymentstatus = ?  where uuid = ?");
+				pstm.setString(1, pnr);
+				pstm.setString(2, status);
+				pstm.setInt(3, uuid);
+				
+				pstm.executeUpdate();
+				
+				booking.setPaymentStatus(status);
+				booking.setTransId(pnr);
+				
+				if(	status.equalsIgnoreCase("SUCCESS")){
+					
+					SendMail sm = new SendMail();
+					sm.sentBookingConfirmation(booking);
+					
+					SMSUtil sms = new SMSUtil();
+					sms.sendSMS(booking.getMobile()+"", formatSMSUser(booking));
+					sms.sendPromotionalSMS(booking.getMobile()+"");
+					
+				}
+				
+				
+				
+			}catch(Exception ex){
+				System.out.println("ex : "+ex.toString());
+				
+			}	
+			
+		}else{
+			status = "FAILED : "+tansStatus;
+			Booking b = new Booking();
+			b.setPnrNumber("PNR-"+uuid);
+			
+			///rollback
+			rollBackBooking(b);
+			
+		}
+		   
+		
+		
+
+		return booking;
+	}
+	
+
+	
+	
+	
+	public Booking makePaymentBookingJuspaySafe(String pnr) {
+		
+		
+		int uuid = 0;
+		
+		try{
+			uuid = Integer.parseInt(pnr.substring(4));
+			
+		}catch(Exception e){
+			
+			uuid = Integer.parseInt(pnr);
+		}
+		
+		
+		
+		
+		Booking booking=getBookingByPNR(pnr);
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		
+		String status = "Payment Due";
+		String tansStatus = "";
+		
+		
+		HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost("https://info.payu.in/merchant/postservice.php?form=2");
+        post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        // Create some NameValuePair for HttpPost parameters
+        List<NameValuePair> arguments = new ArrayList<NameValuePair>();
+        arguments.add(new BasicNameValuePair("key", "qj6yHO"));
+        arguments.add(new BasicNameValuePair("command", "verify_payment"));
+        arguments.add(new BasicNameValuePair("var1", pnr));
+        
+        String hashNumber = MessageDigestUtil.hashCal("SHA-512", "qj6yHO|verify_payment|"+pnr+"|YpJzBjSV");
+        
+        arguments.add(new BasicNameValuePair("hash", hashNumber));
+
+        try {
+            post.setEntity(new UrlEncodedFormEntity(arguments));
+            HttpResponse response = client.execute(post);
+
+            // Print out the response message
+            //System.out.println(EntityUtils.toString(response.getEntity()));
+            String res = EntityUtils.toString(response.getEntity());
+         
+           JSONObject jsonObject =  new JSONObject(res);
+           JSONObject  details = jsonObject.getJSONObject("transaction_details");
+           JSONObject  tdetails = details.getJSONObject(pnr);
+           
+           tansStatus = tdetails.getString("status");
+           
+          
+                        		
+        } catch (IOException e) {
+        
+        	SendMail sm3 = new SendMail();
+			sm3.sendEmail("utpal@techvariable.com", "User Booking", "error PNR"+ pnr+" and "+ e.toString());
+        	
+        }
+        
+        
+		
+	
+		if(tansStatus.trim().equalsIgnoreCase("SUCCESS")){
+			status = "SUCCESS";
+			
+			
+			try{
+				  
+				
+				conn = DBUtil.getConnection();
+			
+				pstm = conn.prepareStatement("update bookingDetails set transid = ?,paymentstatus = ?  where uuid = ?");
+				pstm.setString(1, pnr);
+				pstm.setString(2, status);
+				pstm.setInt(3, uuid);
+				
+				pstm.executeUpdate();
+				
+				booking.setPaymentStatus(status);
+				booking.setTransId(pnr);
+				
+				if(	status.equalsIgnoreCase("SUCCESS")){
+					
+					SendMail sm = new SendMail();
+					sm.sentBookingConfirmation(booking);
+					
+					SMSUtil sms = new SMSUtil();
+					String smsFormat = formatSMSUser(booking);
+					smsFormat = smsFormat + "\r\n Call support @ 8403077666 for any query";
+					sms.sendSMS(booking.getMobile()+"", smsFormat);
+					sms.sendPromotionalSMS(booking.getMobile()+"");
+					
+				}
+				
+				
+				
+			}catch(Exception ex){
+				SendMail sm2 = new SendMail();
+				sm2.sendEmail("utpal@techvariable.com", "User Booking", "error in database"+ pnr+" and "+ ex.toString());
+				
+				
+			}	
+			
+		}else{
+			status = "FAILED : "+tansStatus;
+			
+			try{
+			conn = DBUtil.getOPenConnection();
+			if(conn == null){
+				conn = DBUtil.getConnection();
+			}
+			pstm = conn.prepareStatement("update bookingDetails set transid = ?,paymentstatus = ?  where uuid = ?");
+			pstm.setString(1, pnr);
+			pstm.setString(2, status);
+			pstm.setInt(3, uuid);
+			
+			pstm.executeUpdate();
+			
+			}catch(Exception e){
+				
+			}
+		
+			
+			Booking b = new Booking();
+			b.setPnrNumber("PNR-"+uuid);
+			
+			///rollback
+			rollBackBooking(b);
+			
+			booking = new Booking();
+			
+		}
+		 
+		return booking;
+	}
+	
 	public Booking makePaymentBooking(String pnr, String transId, String tansStatus) {
 		
-		SendMail sm1 = new SendMail();
-		sm1.sendEmail("utpal719@gmail.com", "error", "PNR :"+pnr+" transId : "+transId+"  status : "+tansStatus);
 		
 		int uuid = 0;
 		
@@ -3330,19 +4248,21 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 				
 				if(	status.equalsIgnoreCase("SUCCESS")){
 					
-					SendMail sm = new SendMail();
-					sm.sentBookingConfirmation(booking);
+					/*SendMail sm = new SendMail();
+					sm.sentBookingConfirmation(booking);*/
 					
 					SMSUtil sms = new SMSUtil();
-					sms.sendSMS(booking.getMobile()+"", formatSMS(booking));
-					
+					String smsFormat = formatSMSUser(booking);
+					smsFormat = smsFormat + "\r\n Call support @ 8403077666 for any query";
+					sms.sendSMS(booking.getMobile()+"", smsFormat);
+					sms.sendPromotionalSMS(booking.getMobile()+"");
 				}
 				
 				
 				
 			}catch(Exception ex){
 				System.out.println("ex : "+ex.toString());
-				sm1.sendEmail("utpal719@gmail.com", "error", "ex  : "+ex.toString());
+				
 			}	
 			
 		}else{
@@ -3361,8 +4281,7 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 		return booking;
 	}
 	
-	
-	public String formatSMS(Booking booking){
+	public String formatSMSUser(Booking booking){
 		
 		
 		String message = "";
@@ -3387,6 +4306,61 @@ public boolean updateBankDetails(String pnrNumber,String passengers,String name,
 					seats = p.getSeatNumber()+"";
 				}else{
 					seats = seats +", "+p.getSeatNumber();
+				}
+			
+				
+			message = "Network m-Ticket\r\n"+fromCity+" to "+toCity+"\r\nDate: "+booking.getJourneyDate()+"\r\nPNR: "+pnr+"\r\nTravelers : "+passengers+"\r\nSeats : "+seats+"\r\nDept Time : "+booking.getStartTime()+"\r\nBoarding Pt : "+booking.getBoardingPoint()+"\r\nTotal Fare: "+booking.getTotdalFare()+"\r\nGST 5% is applicable on all AC buses";	
+				
+			}
+			
+			
+			
+			
+		}catch(Exception e){
+			System.out.println("e : [formatSMS] "+e.toString());
+		}
+		return message;
+	}
+	
+	public String formatSMS(Booking booking){
+		
+		
+		String message = "";
+		
+		try{
+			String fromCity = booking.getFromCity();
+			String toCity = booking.getToCity();
+			String pnr = booking.getPnrNumber();
+			String passengers = "";
+			String seats = "";
+			ArrayList al = booking.getPassengerList();
+			for(int i=0;i<al.size();i++){
+				Passenger p = (Passenger)al.get(i);
+				
+				if(passengers.equals("")){
+					passengers = p.getPassengerName();
+				}else{
+					passengers = passengers +", "+p.getPassengerName();
+				}
+				
+				if(seats.equals("")){
+					String updatedSeat = "";
+					if(p.getSeatNumber() > 40){
+						updatedSeat = "S"+(p.getSeatNumber() - 40);
+					}else{
+						updatedSeat = p.getSeatNumber()+"";
+					}
+					
+					seats = updatedSeat;
+				}else{
+					String updatedSeat = "";
+					if(p.getSeatNumber() > 40){
+						updatedSeat = "S"+(p.getSeatNumber() - 40);
+					}else{
+						updatedSeat = p.getSeatNumber()+"";
+					}
+					
+					seats = seats +", "+updatedSeat;
 				}
 			
 				

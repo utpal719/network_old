@@ -229,7 +229,7 @@ body.loading .modal {
 			<div class="col-md-4" style="margin-left:30%;">
 				<div style="margin-left:3%;">
 				<span style="text-decoration:underline;color:black;">Payment Summary</span><br>
-				<span>Fare : <b>Rs. {{busDetail.bus.fare}}</b><br>
+				<span>Fare : <b>&#8377; {{busDetail.bus.fare}} / {{busDetail.bus.sleeperFare}}</b><br>
 				Seat : <b>{{numberOfSeat}}</b><br>
 				Total : <b>Rs. {{totalFare}}</b>
 				
@@ -310,9 +310,9 @@ body.loading .modal {
                     </div>
                     <div class="col-md-4">
                         <h4>Have Questions?</h4>
-                        <h4 class="text-color">+1-000-000-0000</h4>
+                        <h4 class="text-color">8403077666</h4>
                         
-                        <p><h5>support@network.com</h5></p>
+                        <p><h5>support@networktravels.com</h5></p>
                     </div>
 
                 </div>

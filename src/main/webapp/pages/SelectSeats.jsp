@@ -373,7 +373,7 @@
 </style>
 
 </head>
-<body data-ng-controller="selectSeatController" ng-cloak>
+<div data-ng-controller="selectSeatController" ng-cloak>
 
 
     <!-- FACEBOOK WIDGET -->
@@ -976,6 +976,147 @@
                	 </div>
                		
                </div>
+               
+               
+               <div ng-if="seat351">
+
+               			<div class="col-md-4" style="background-color: #fff; border:1px solid #ccc ;border-radius : 10px;margin-left: 10%;">
+               		
+               		<div style="height: 96px;width: 364px">
+               		
+               		<div style="margin-top: 5%;">
+               		<div class="col-md-1" style="left: 0px;">
+	               		<a href="#" style="height: 20px;width: 20px; display: block;background-position: -24px -106px;;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               	</div>
+
+					<div  style="margin-left: 4%;">
+	               	<div class="col-md-1" ng-repeat = "seat in [1,2,3,4,5,6,7,8,9,10]">
+	               	<div style="left: 264px; top: 72px;">
+	       
+	               		<a ng-click="selected((3+(3*$index)))"  ng-style="{'background-position' :  + (isAvailableView(3+(3*$index)))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{3+3*$index}}</a>
+	               	</div>
+	               	
+	               	<div style="left: 264px; top: 24px;">
+	               		<a ng-click="selected((2+(3*$index)))" ng-style="{'background-position' :  + (isAvailableView(2+(3*$index)))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{2+(3*$index)}}</a>
+	               		</div>
+	               		<br>
+	               		
+	               		<!-- <div style="left: 264px; top: 0px;">
+	               		<a href="#"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               		</div> -->
+	               		<div style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((1+(3*$index)))" ng-style="{'background-position' :  + (isAvailableView(1+(3*$index)))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{1+(3*$index)}}</a>
+	               		</div>
+	               	</div>
+	               	</div>
+	      
+	           		<!-- Herer enter -->
+	           
+	               		
+	               	<div class="col-md-1">
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected(34)" ng-style="{'background-position' : +(isAvailableView(34))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">34</a>
+	               		</div>
+	               			<div style="left: 264px; top: 24px;">
+	               		<a href="#" ng-click="selected(33)" ng-style="{'background-position' : +(isAvailableView(33))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">33</a>
+	               		</div>
+	               		<!-- <div style="left: 264px; top: 24px;">
+	               		<a href="#" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               		</div> -->
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(32)" ng-style="{'background-position' : +(isAvailableView(32))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">32</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(31)" ng-style="{'background-position' : +(isAvailableView(31))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">31</a>
+	               		</div>
+	               	</div>	
+	               	
+	               	</div>
+               		
+               		</div>
+               		
+               		</div>
+               		
+               </div>
+               
+               
+               
+                	<div ng-if="seat45">
+
+               		<div class="col-md-4" style="background-color: #fff; border:1px solid #ccc ;border-radius : 10px;margin-left: 10%;">
+               		
+               		<div style="height: 126px;width: 364px">
+    
+    				<div style="margin-top : 5%;">
+    				
+    				<!-- <div class="col-md-1" style="left: 0px;">
+	               		<a href="#" style="height: 20px;width: 20px; display: block;background-position: -24px -106px;;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               	</div>
+	             	<div class="col-md-1">
+		               	<div style="left: 264px; top: 72px;">
+		       
+		               		<a ng-click="selected(2)"  ng-style="{'background-position' :  + (isAvailableView(2))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">2</font></a>
+		               	</div>
+		               	<div style="left: 264px; top: 24px;">
+		               		<a ng-click="selected(1)" ng-style="{'background-position' :  + (isAvailableView(1))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">1</font></a>
+		               	</div>
+		               		<br>
+		            
+		               		
+	               	</div> -->
+	               	
+	               <div class="col-md-1" ng-repeat = "seat in [1,2,3,4,5,6,7,8,9,10]">
+	               		<div style="left: 264px; top: 72px;">
+	      
+	      					<a ng-click="selected((-2+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(-2+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{-2+(4*($index+1))}}</font></a>
+	               		
+	             	  	</div>
+	               	
+	               		<div style="left: 264px; top: 24px;">
+	               		<a ng-click="selected((-3+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(-3+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{-3+(4*($index+1))}}</font></a>
+	               		
+	               		</div>
+	               		<br>
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((0+(4*($index+1))))"  ng-style="{'background-position' :  + (isAvailableView(0+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{0+(4*($index+1))}}</font></a>
+	               		</div> 
+	               		<div style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((-1+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(-1+(4*($index+1))))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{-1+(4*($index+1))}}</font></a>
+	               		</div>
+	               	</div>
+	               	
+	               	
+	               	<div class="col-md-1">
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected(45)" ng-style="{'background-position' : +(isAvailableView(45))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">45</a>
+	               		</div>
+	               			<div style="left: 264px; top: 24px;">
+	               		<a href="#" ng-click="selected(44)" ng-style="{'background-position' : +(isAvailableView(44))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">44</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(43)" ng-style="{'background-position' : +(isAvailableView(43))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">43</a>
+	               		</div>
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(42)" ng-style="{'background-position' : +(isAvailableView(42))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">42</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(41)" ng-style="{'background-position' : +(isAvailableView(41))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">41</a>
+	               		</div>
+	               	</div>	
+	               	
+	        
+	            	</div>
+	               	
+	               </div>
+               		
+               	 </div>
+               		
+               </div>
+               
+               
                	
                	
                	<div ng-if="seat31">
@@ -1040,6 +1181,78 @@
                
                	</div>
                	
+               	<div ng-if="seat28">
+               	
+               			<div class="col-md-4" style="background-color: #fff; border:1px solid #ccc ;border-radius : 10px;margin-left: 10%;">
+               		
+               		<div style="height: 116px;width: 364px">
+               		
+               		<div style="margin-top: 5%;">
+               		<div class="col-md-1" style="left: 0px;">
+	               		<a href="#" style="height: 20px;width: 20px; display: block;background-position: -24px -106px;;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               	</div>
+
+					<div  style="margin-left: 4%;">
+	               	<div class="col-md-1" ng-repeat = "seat in [1,2,3,4,5,6,7,8]">
+	               	<div ng-if="$index != 7" style="left: 264px; top: 72px;">
+	       
+	               		<a ng-click="selected((3+(3*$index)))"  ng-style="{'background-position' :  + (isAvailableView(3+(3*$index)))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{3+(3*$index)}}</a>
+	               	</div>
+	               	
+	               	<div ng-if="$index != 7" style="left: 264px; top: 24px;">
+	               		<a ng-click="selected((2+(3*$index)))" ng-style="{'background-position' :  + (isAvailableView(2+(3*$index)))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{2+(3*$index)}}</a>
+	               		</div>
+	               		
+	       				<div ng-if="$index == 7" style="left: 264px; top: 72px;">
+	       
+	               		<a ng-click="selected(23)"  ng-style="{'background-position' :  + (isAvailableView(23))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">23</a>
+	               	</div>
+	               	
+	               	<div ng-if="$index == 7" style="left: 264px; top: 24px;">
+	               		<a ng-click="selected(22)" ng-style="{'background-position' :  + (isAvailableView(22))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">22</a>
+	               		</div>
+	       
+	               		
+	               		<br><br>
+	               		
+	               	
+	               		<div ng-if="$index != 0" style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((-2+(3*$index)))" ng-style="{'background-position' :  + (isAvailableView(-2+(3*$index)))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">{{-2+(3*$index)}}</a>
+	               		</div>
+	               	</div>
+	               	</div>
+	      
+	           		<!-- Herer enter -->
+	           
+	               		
+	               	<div class="col-md-1">
+	               		<div style="left: 264px; top: 72px;">
+	               		<a  ng-click="selected(28)" ng-style="{'background-position' : +(isAvailableView(28))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">28</a>
+	               		</div>
+	               			<div style="left: 264px; top: 24px;">
+	               		<a ng-click="selected(27)" ng-style="{'background-position' : +(isAvailableView(27))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">27</a>
+	               		</div>
+	               		<div style="left: 264px; top: 24px;">
+	               		<a  ng-click="selected(26)" ng-style="{'background-position' : +(isAvailableView(26))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">26</a>
+	               		</div>
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a  ng-click="selected(25)" ng-style="{'background-position' : +(isAvailableView(25))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">25</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a  ng-click="selected(24)" ng-style="{'background-position' : +(isAvailableView(24))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">24</a>
+	               		</div>
+	               	</div>	
+	               	
+	               	</div>
+               		
+               		</div>
+               		
+               		</div>
+               
+               	</div>
+               	
+               	
                	
                		<div ng-if="seat32">
                	
@@ -1103,6 +1316,121 @@
                
                	</div>
                	
+
+				<div ng-if="seats60">
+               	
+               		   		<div class="col-md-4" style="background-color: #fff; border:1px solid #ccc ;border-radius : 10px;margin-left: 10%;">
+               		
+               		<div style="height: 126px;width: 364px">
+    
+    				<div style="margin-top : 5%;">
+    				
+    				<div class="col-md-1" style="left: 0px;">
+	               		<a href="#" style="height: 20px;width: 20px; display: block;background-position: -24px -106px;;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"></a>
+	               	</div>
+	               	
+	              
+	              <div class="col-md-1">
+		               	<div style="left: 264px; top: 72px;">
+		       
+		               		<a ng-click="selected(2)"  ng-style="{'background-position' :  + (isAvailableView(2))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">2</font></a>
+		               	</div>
+		               	<div style="left: 264px; top: 24px;">
+		               		<a ng-click="selected(1)" ng-style="{'background-position' :  + (isAvailableView(1))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">1</font></a>
+		               	</div>
+		               		<br>
+		               		
+		               	<div style="left: 264px; top: 24px;">
+		               		<a ng-click="selected(40)" ng-style="{'background-position' :  + (isAvailableView(40))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">40</font></a>
+		               	</div>		
+		            
+		               		
+	               	</div>
+	               	
+	              <div class="col-md-1" ng-repeat = "seat in [1,2,3,4,5,6,7,8]">
+	               		<div style="left: 264px; top: 72px;">
+	       
+	               		<a ng-click="selected((2+(4*($index+1))))"  ng-style="{'background-position' :  + (isAvailableView(2+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{2+(4*($index+1))}}</font></a>
+	             	  	</div>
+	               	
+	               		<div style="left: 264px; top: 24px;">
+	               		<a ng-click="selected((1+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(1+(4*($index+1))))}"  style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{1+(4*($index+1))}}</font></a>
+	               		</div>
+	               		<br>
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((0+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(0+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{0+(4*($index+1))}}</font></a>
+	               		</div> 
+	               		<div style="left: 264px; top: 0px;">
+	               		<a ng-click="selected((-1+(4*($index+1))))" ng-style="{'background-position' :  + (isAvailableView(-1+(4*($index+1))))}" style="height: 20px;width: 20px; display: block;background-position: 0 0;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;"><font style="padding-left:10%;color :#968181cc;font-size: 12px;">{{-1+(4*($index+1))}}</font></a>
+	               		</div>
+	               	</div>
+	               	
+	               	
+	               	<div class="col-md-1">
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected(39)" ng-style="{'background-position' : +(isAvailableView(39))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">39</a>
+	               		</div>
+	               			<div style="left: 264px; top: 24px;">
+	               		<a href="#" ng-click="selected(38)" ng-style="{'background-position' : +(isAvailableView(38))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">38</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(37)" ng-style="{'background-position' : +(isAvailableView(37))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">37</a>
+	               		</div>
+	               		
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(36)" ng-style="{'background-position' : +(isAvailableView(36))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">36</a>
+	               		</div>
+	               		<div style="left: 264px; top: 0px;">
+	               		<a href="#" ng-click="selected(35)" ng-style="{'background-position' : +(isAvailableView(35))}" style="height: 20px;width: 20px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">35</a>
+	               		</div>
+	               	</div>	
+	        
+	            	</div>
+	               	
+	               </div>
+               		
+               	 </div>
+               	 
+               	 
+               	</div>
+               	
+               	<div ng-if="seats60">
+               	
+               		   		<div class="col-md-4" style="background-color: #fff; border:1px solid #ccc ;border-radius : 10px; margin-top:16%;margin-left : -33%;">
+               		
+               		<!-- <div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected(41)" ng-style="{'background-position' : +(isAvailableView(41))}" style="height: 20px;width: 40px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">S1</a>
+	               		</div> -->
+               		
+               		<div style="margin-top:2%;">
+               		
+               		   <div class="col-md-2" ng-repeat = "seat in [1,2,3,4,5]">
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected((0+40+(4*($index+1))))"  ng-style="{'background-position' : +(isAvailableView(0+40+(4*($index+1))))}" style="height: 20px;width: 40px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">S{{0+(4*($index+1))}}</a>
+	               		</div>
+	               	
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected((-1+40+(4*($index+1))))"  ng-style="{'background-position' : +(isAvailableView(-1+40+(4*($index+1))))}" style="height: 20px;width: 40px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">S{{-1+(4*($index+1))}}</a>
+	               		</div>
+	               		<br>
+	               		
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected((-2+40+(4*($index+1))))"  ng-style="{'background-position' : +(isAvailableView(-2+40+(4*($index+1))))}" style="height: 20px;width: 40px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">S{{-2+(4*($index+1))}}</a>
+	               		</div>
+	               		<div style="left: 264px; top: 72px;">
+	               		<a href="#" ng-click="selected((-3+40+(4*($index+1))))"  ng-style="{'background-position' : +(isAvailableView(-3+40+(4*($index+1))))}" style="height: 20px;width: 40px; display: block;background-image: url(../resource/img/Seatlayout1.png);background-repeat: no-repeat;">S{{-3+(4*($index+1))}}</a>
+	               		</div>
+	               	</div>
+               		</div>
+               		
+               		
+               		</div>
+               		
+               		
+               		</div>
+               	
+			
 		
                		<div class="col-md-4" style="margin-left: 15%;">
                			
@@ -1225,9 +1553,9 @@
                     </div>
                     <div class="col-md-4">
                         <h4>Have Questions?</h4>
-                        <h4 class="text-color">+1-000-000-0000</h4>
+                        <h4 class="text-color">8403077666</h4>
                         
-                        <p><h5>support@network.com</h5></p>
+                        <p><h5>support@networktravels.com</h5></p>
                     </div>
 
                 </div>
@@ -1325,5 +1653,5 @@
         </script>
         
     </div>
-</body>
+</div>
 </html>

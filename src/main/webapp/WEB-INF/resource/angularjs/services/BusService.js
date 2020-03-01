@@ -4,9 +4,9 @@ app.service('BusService', function($http,$q) {
 	var deferred = $q.defer();	 
 	return {
 		
-		searchAllBuses:function(from,to,startdate){
+		searchAllBuses:function(from,to,journeyDate){
 			
-			console.log('here inside bus');
+			
 
 			var promise=$http({
 				method : 'POST',
@@ -14,7 +14,7 @@ app.service('BusService', function($http,$q) {
 				data: $.param({
 		            fromCity: from,
 		           toCity: to,
-		           startdate : startdate
+		           journeyDate : journeyDate
 		        }),
 				dataType : 'json',
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -220,7 +220,7 @@ app.service('BusService', function($http,$q) {
 				
 				var promise = $http({
 					method : 'POST',
-					url : 'busService/bookTicketCash2',
+					url : 'busService/bookTicketCash',
 					data: $.param({
 					    busDetail: busDetail,
 			            noOfSeat : noOfSeat,
@@ -522,6 +522,42 @@ app.service('BusService', function($http,$q) {
 				data: $.param({
 					pnrNumber: pnrNumber,
 					passengers: strpasengers
+		            
+		        }),
+				dataType : 'json',
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+				
+			}).success(function(data, status, headers, config){
+				
+				//$scope.city=data;
+	
+				deferred.resolve(data);
+				console.log('success '+data);
+				
+			}).error(function(data, status, headers, config) {
+				deferred.reject(data);
+		     
+			});
+			
+			return promise;	
+		},
+		cancelBookingAgent : function(pnrNumber,passengers , userId){
+			var strpasengers = "";
+			for(var i=0;i<passengers.length;i++){
+				if(strpasengers === ""){
+					strpasengers = passengers[i];
+				}else{
+					strpasengers = strpasengers+","+passengers[i];
+				}
+			}
+			
+			var promise = $http({
+				method : 'POST',
+				url : 'busService/cancelBookingAgent',
+				data: $.param({
+					pnrNumber: pnrNumber,
+					passengers: strpasengers,
+					userid : userId
 		            
 		        }),
 				dataType : 'json',

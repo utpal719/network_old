@@ -71,7 +71,7 @@ var app=angular.module('network', ['ui.bootstrap','LocalStorageModule']);
     
     $scope.logout = function(){
     	 localStorage.clear();
-    	 $window.location.href = 'https://nwt-techv.rhcloud.com';
+    	 $window.location.href = 'http://network-network.b9ad.pro-us-east-1.openshiftapps.com';
     };
     
     

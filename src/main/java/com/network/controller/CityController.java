@@ -20,7 +20,9 @@ public class CityController {
 	@RequestMapping(value="/getAllCityName", method=RequestMethod.GET)
 	public ArrayList getAllCityNames(){
 		UserUtil userUtil = new UserUtil();
-		return userUtil.getAllCityName();
+		ArrayList allCity = userUtil.getAllCityName();
+		DBUtil.closeConnection();
+		return allCity;
 	}
 	
 

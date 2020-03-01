@@ -8,7 +8,7 @@
  <!-- GOOGLE FONTS -->
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300,600' rel='stylesheet' type='text/css'>
-    <!-- /GOOGLE FONTS -->
+    <!-- /GOOGLE FONTS -->  
     <link rel="stylesheet" href="../resource/css/bootstrap.css">
     <link rel="stylesheet" href="../resource/css/font-awesome.css">
     <link rel="stylesheet" href="../resource/css/icomoon.css">
@@ -16,12 +16,13 @@
     <link rel="stylesheet" href="../resource/css/mystyles.css">
     <link rel="stylesheet" href="../resource/css/typeahead.css">
      
-	<script src="../resource/js/angular.js"></script>
+         <script src="../resource/js/angular.js"></script>
+    <script src="../resource/js/ui-bootstrap.js"></script>
     <script src="../resource/js/angular-local-storage.js"></script>
-    <script src="../resource/js/dirPagination.js"></script>
-    <script src="../resource/angularjs/controller/busresult.js"></script>
-	<script src="../resource/angularjs/services/BusService.js"></script>
-	
+    <script src="../resource/angularjs/controller/index_cityname.js"></script>
+     <script src="../resource/angularjs/services/CityService.js"></script>
+
+     
 <style>
 @font-face {
   font-family: "RobotoLight";
@@ -81,7 +82,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     outline: none;
 }
 
-
 [ng-cloak],
 [data-ng-cloak],
 [x-ng-cloak],
@@ -92,10 +92,9 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 </style>
 
 </head>
+<body>
 
-<body data-ng-controller="cancelcontroller" ng-cloak>
-    
-    
+<body data-ng-controller="CityController" ng-cloak>
 
     <!-- FACEBOOK WIDGET -->
     <div id="fb-root"></div>
@@ -115,15 +114,16 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
                         <li><a href="../index.jsp">Home</a>
 
                         </li>
-                        <li><a href="aboutus.jsp">About Us</a>  </li>
+                        <li class="active"><a href="#">About Us</a>
+                                </li>
 
-                        <li class="active"><a href="#">Cancellation</a>  </li>
+                        <li><a href="cancellation.jsp">Cancellation</a>  </li>
                         <li><a href="printsms.jsp">Print / SMS Ticket</a></li>
                           <li><a href="contactus.jsp">Contact Us</a></li>
-                          <li ng-if="!auth"><a href="pages/login.jsp">Login{{auth}}</a></li>
+                          <li ng-if="!auth"><a href="pages/login.jsp">Login</a></li>
 						
 						  <li ng-if="auth && adminuser"><a>{{user.userName}}</a>
-                             <ul>
+                            <ul>
                                 <li><a href="pages/Admin/adminhome.jsp">Bus Chart</a>
                                 </li>
                                  <li><a href="pages/Admin/report.jsp">Report</a>
@@ -145,7 +145,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
                             </ul>
                         </li>
                           <li ng-if="auth && agentuser"><a >{{user.userName}}</a>
-                             <ul>
+                           <ul>
                            		 <li><a href="pages/Admin/adminhome.jsp">Bus Chart</a>
                                 </li>
                                  <li><a href="pages/viewBalance.jsp">My Balance</a>
@@ -156,6 +156,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
                             </ul>
                         </li>
 
+
                     </ul>
                 </div>
             </div>
@@ -163,94 +164,81 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     </div>
 
 
-    <br>
 
-    <section >
+
+    <section class="aboutus">
     	<div class="wrap">
-    		<h1 style="margin-left:35%;  font-size:25px;">Ticket Cancellation and Refund</h1>
+    		<h1 class="headerarrow" style="color:black">Terms and Conditions</h1>
     		
-            <p style="margin-left:30%; font-size:18px; margin-bottom:1px;">Enjoy nuisance-free ticket cancellation. Stay updated with the</p>
-            <p style="margin-left:35%; font-size:18px;">refund process. So, what are you waiting for!</p>
-        		
-    	</div>
-    </section> <br><hr style="border-width: 1px;">
-    <br><br>
-    <section>
-        <div class="wrap">
-            <div style="margin-left:40%; font-size:16px;">
-                <label >PNR Number</label>
-                <input class="textbox" type="text" ng-model="pnrnumber" ng-change="varifypnr()" placeholder="">
-                <span ng-if="pnravailabe"><i class="fa fa-check 2x" aria-hidden="true" style="color:green;"></i>
-                </span>
-                <span ng-if="pnrnotavailable"><i class="fa fa-times 2x" aria-hidden="true" style="color:rgb(192, 61, 61);"></i>
-                </span>
-                <br><br>
-                <label>Email Id</label>
-                <input class="textbox" type="text" ng-model="emailid" ng-change="varifyEmail()" placeholder="">
-                 <span ng-if="emailavailabe"><i class="fa fa-check 2x" aria-hidden="true" style="color:green;"></i>
-                </span>
-                <span ng-if="emailnotavailable"><i class="fa fa-times 2x" aria-hidden="true" style="color:rgb(192, 61, 61);"></i>
-                </span>
-                <br><br>
-                <a ng-click="cancelTKT()" ><button class="btn btn-danger btn-md" type="button" style="border:0px; width:28%; font-size:18px;">Cancel</button></a>
-                
-            </div>
-        </div>
-    </section>
-    <br>
-    <section >
-    	<div class="wrap">
-    		<h1 style="margin-left:45%;  font-size:25px;">Cancellation Policy</h1>
+    		<h2>General terms : </h2>
+    	<font>	<div style="width : 80% ; margin-left : 10%;">1) networktravels.com (NETWORK TRAVELS) is the largest private bus fleet operator in Assam and
+North East India which allows its customers to have the flexibility of booking tickets offline (from
+counters) as well as online from their homes and offices by providing them with the choice of
+buses with departure times and prices.<br><br>
+
+2)The arrival and departure times mentioned on the ticket are only tentative timings. Buses may be
+delayed due to some unavoidable reasons like traffic jams etc. However, the bus will not leave
+the source before the time that is mentioned on the ticket. Passengers are advised to call the
+contact number mentioned contact us tab in both the website and app and reconfirm the boarding
+point location and departure time on the day of journey.
+<br><br>
+3) Any complaints/grievances should be reported in a week's time from date of journey performed.<br><br>
+4) If ticket confirmation/cancellation, SMS/Email, is not sent for any reason, if reported it can be
+resent by our support team. SMS/Email might fail to deliver or get delayed for several reasons
+which are not in Network Travel's control.<br><br>
+5) Objectionable articles are not allowed to be carried in the bus. <br><br>
+6) Travelers under the influence of alcohol/drugs are not allowed in the bus. <br><br>
+7) Travelers are requested to maintain decorum. <br><br>
+8) Bookings and cancellations over phone are not allowed. <br><br>
+9)The terms and conditions of our services can be amended, modified or withdrawn by
+networktravels.com at any time without notice.<br><br>
+
+<h2>Failure Transaction : </h2>
+<br>1) A transaction might fail for several reasons and your account/card might be debited without
+generating a ticket. If the amount is deducted from your account/card, we request you to call our
+customer care number to re-confirm the failed transaction before proceeding with a fresh
+transaction/booking.
+<br><br>
+2) Transactions such as these are refunded back to customer. Please read the refund policy below.
+
+    	
     		
-          	<p>1) Before 3 (three) hours from the reporting time- No charges.</p>
-			<p>2) Other cases- No refund.</p>
-			<p>3) Company is not responsible for luggage lost or damaged.</p>
-			<p>4) Luggage over 20 kg are not allowed.</p>
-			<p>5) In the event of cancellation of journey due to technical defect, the passengers will get back their bus fare.
-          	
-          
-    	</div>
+    	   	</div></font>
     </section>
-    
-<br><br><br><br><br>
 
-    <hr>
-    
-    
-    
-    
-    
-     <footer id="main-footer">
-            <div class="container">
-                <div class="row row-wrap">
-                    <div class="col-md-3">
-                        <a class="logo" href="../index.jsp">
-                            <img src="../resource/img/foter.jpg" alt="Image Alternative text" title="Image Title" />
-                        </a>
-                     
-                        <ul class="list list-horizontal list-space">
-                            <li>
-                                <a class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top" href="#"></a>
-                            </li>
-                            <li>
-                                <a class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top" href="#"></a>
-                            </li>
-                            <li>
-                                <a class="fa fa-google-plus box-icon-normal round animate-icon-bottom-to-top" href="#"></a>
-                            </li>
-                            <li>
-                                <a class="fa fa-linkedin box-icon-normal round animate-icon-bottom-to-top" href="#"></a>
-                            </li>
-                            <li>
-                                <a class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top" href="#"></a>
-                            </li>
-                        </ul>
-                    </div>
+    <footer id="main-footer">
+        <div class="container">
+            <div class="row row-wrap">
 
-                    
-                    <div class="col-md-4" style="margin-left: 5%;">
-                        <ul class="list list-footer">
-                             <li style="margin-top:3%;"><a href="contactus.jsp">Contact Us</a>
+                <div class="col-md-3">
+                    <a class="logo" href="index.html">
+                        <img src="../resource/img/foter.jpg" alt="Image Alternative text" title="Image Title" />
+                    </a>
+           
+                    <ul class="list list-horizontal list-space">
+                        <li>
+                            <a class="fa fa-facebook box-icon-normal round animate-icon-bottom-to-top" href="#" style="background-color:#B22222;"></a>
+                        </li>
+                        <li>
+                            <a class="fa fa-twitter box-icon-normal round animate-icon-bottom-to-top" href="#" style="background-color:#B22222;"></a>
+                        </li>
+                        <li>
+                            <a class="fa fa-google-plus box-icon-normal round animate-icon-bottom-to-top" href="#" style="background-color:#B22222;"></a>
+                        </li>
+                        <li>
+                            <a class="fa fa-linkedin box-icon-normal round animate-icon-bottom-to-top" href="#" style="background-color:#B22222;"></a>
+                        </li>
+                        <li>
+                            <a class="fa fa-pinterest box-icon-normal round animate-icon-bottom-to-top" href="#" style="background-color:#B22222;"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-1"></div>
+
+                 <div class="col-md-3" style="margin-left: 8%;">
+                        <ul class="list list-footer" style="margin-top:7px; font-size:12px;">
+                           
+                            <li style="margin-top:3%;"><a href="contactus.jsp">Contact Us</a>
                             </li><h>
                             <li style="margin-top:3%;"><a href="aboutus.jsp">About Us</a>
                             </li>
@@ -261,18 +249,28 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
                             </li>
                             <li style="margin-top:3%;"><a href="../index.jsp">Home</a>
                             </li>
+
                         </ul>
                     </div>
-                    <div class="col-md-4">
-                        <h4>Have Questions?</h4>
-                        <h4 class="text-color">+1-000-000-0000</h4>
-                        
-                        <p><h5>support@network.com</h5></p>
+                <div class="col-md-1"></div>
+               <div class="col-md-3">
+                        <h5>Have Questions?</h5>
+                        <h6>Network Travels: 8811079999, 7086093241, 7086018277(ISBT) </h6>
+                        <h6>Network Courier : 9435019337</h6>
+                        <h6>Network Cargo : 8011667971</h6>
+                        <h6>Air Ticket : 0361-2739630 & 03612739631</h6>
+                        <h6>Network Tourism : 9435154638, 9434506446</h6>
+                    <h6>networktoursindia@gmail.com</h6>
+                    <h6>networktravelsindia@gmail.com</h6>
+                    <h4></h4>
+                    <h6>17 - Paltan Bazar, G.S. Road,<h6>
+                    <h6 >Guwahati - 781008</h6>
+                    <h6>Assam,India, </h6>
                     </div>
 
-                </div>
             </div>
-        </footer>
+        </div>
+    </footer>
     
           <script src="../resource/js/jquery.js"></script>
         
@@ -286,7 +284,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
         <script src="../resource/js/ionrangeslider.js"></script>
         <script src="../resource/js/icheck.js"></script>
         <script src="../resource/js/fotorama.js"></script>
-    
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
         <script src="../resource/js/typeahead.js"></script>
         <script src="../resource/js/card-payment.js"></script>
         <script src="../resource/js/magnific.js"></script>
@@ -296,6 +294,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
         <script src="../resource/js/countdown.js"></script>
         <script src="../resource/js/gridrotator.js"></script>
         <script src="../resource/js/custom.js"></script>
- 
+        
 </body>
 </html>

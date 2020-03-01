@@ -703,7 +703,7 @@
                                             <h4>{{busdetails.bus.travelTime}}</h4>
                                            
                                         </div>
-                                        <div class="col-md-3"><span class="booking-item-price">{{busdetails.bus.fare}}</span><span>/person</span>
+                                        <div class="col-md-3"><span class="booking-item-price" style="font-size : 30px !important;"> &#8377;{{busdetails.bus.fare}} <font ng-if="busdetails.bus.sleeperFare != 0"> / {{busdetails.bus.sleeperFare}} </font> </span>
                                             <a class="btn btn-primary" ng-click="viewDetails(busdetails.bus.busId,busdetails.midId)" href="SelectSeats.jsp">Select Seat</a><!-- <a class="btn btn-primary" style="margin-left: 2%;" id="viewDetails" >View Details</a> -->
                                         </div>
                                     </div>
@@ -792,9 +792,9 @@
                     </div>
                     <div class="col-md-4">
                         <h4>Have Questions?</h4>
-                        <h4 class="text-color">+1-000-000-0000</h4>
+                        <h4 class="text-color">8403077666</h4>
                         
-                        <p><h5>support@network.com</h5></p>
+                        <p><h5>support@networktravels.com</h5></p>
                     </div>
 
                 </div>
